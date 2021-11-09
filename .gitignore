@@ -1,0 +1,5 @@
+__pycache__/
+*test*
+/build
+*egg*
+/dist
