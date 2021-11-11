@@ -1,3 +1,12 @@
+import sys
+
+DEVEL=False
+
+if DEVEL:
+    local_path="./src/"
+    if local_path not in sys.path:
+        sys.path.append(local_path)
+
 from simple_sim import runtime,blocks
 import logging
 
@@ -12,21 +21,21 @@ if __name__=="__main__":
 
     model=runtime.Model()
     model.create_plot(2,2,title="test 1")
-    sine_1=blocks.sine_generator(freq=100,amplitude=1)
-    sine_2=blocks.sine_generator(freq=110,amplitude=0.9)
-    sine_3=blocks.sine_generator(freq=120,amplitude=0.8)
-    sine_4=blocks.sine_generator(freq=130,amplitude=0.7)
-    noise=blocks.Noise_generator(amplitude=0.5)
-    sum=blocks.Sum()
-    mul=blocks.Multiplier()
-    absolute=blocks.ABS()
-    buff=blocks.Buffer(sz=500)
-    ep=blocks.end_point()
-    fft=blocks.FFT()
-    p1=blocks.Plot(ax=model.axes[0,0])
-    p2=blocks.Plot(ax=model.axes[0,1])
-    p3=blocks.Plot(ax=model.axes[1,0])
-    f=blocks.File_out("test.json")
+    sine_1=blocks.sources.sine_generator(freq=100,amplitude=1)
+    sine_2=blocks.sources.sine_generator(freq=110,amplitude=0.9)
+    sine_3=blocks.sources.sine_generator(freq=120,amplitude=0.8)
+    sine_4=blocks.sources.sine_generator(freq=130,amplitude=0.7)
+    noise=blocks.sources.Noise_generator(amplitude=0.1)
+    sum=blocks.functions.Sum()
+    mul=blocks.functions.Multiplier()
+    absolute=blocks.functions.ABS()
+    buff=blocks.functions.Buffer(sz=500)
+    ep=blocks.loads.end_point()
+    fft=blocks.functions.FFT()
+    p1=blocks.display.Plot(ax=model.axes[0,0])
+    p2=blocks.display.Plot(ax=model.axes[0,1])
+    p3=blocks.display.Plot(ax=model.axes[1,0])
+    f=blocks.loads.File_out("test.json")
 
 
     model.add_block(sine_1)

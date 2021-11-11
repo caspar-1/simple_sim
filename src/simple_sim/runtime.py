@@ -5,7 +5,7 @@ import logging
 from simple_sim.key_listner import key_listner
 from simple_sim.custom_exceptions import *
 import simple_sim.function_timer as function_timer
-import simple_sim.blocks as blocks
+import simple_sim.blocks  as blocks
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -28,14 +28,14 @@ class Model():
         self.fig.suptitle(title, fontsize=16)
 
     def add_block(self, blk):
-        if not isinstance(blk, blocks.Block):
+        if not isinstance(blk, blocks.block.Block):
             raise Block_exception_invalid_class
 
         self.blocks.append(blk)
 
     def __get_block(self, obj):
         blk = None
-        if isinstance(obj, blocks.Block):
+        if isinstance(obj, blocks.block.Block):
             name = obj.name
         elif isinstance(obj, str):
             name = obj
@@ -48,7 +48,7 @@ class Model():
     def link_block(self, source, load):
 
         def __get(a):
-            if isinstance(a, blocks.Block):
+            if isinstance(a, blocks.block.Block):
                 blk = a
                 pin_name = None
             elif isinstance(a, dict):
@@ -78,7 +78,7 @@ class Model():
         logger.debug("model initialisation")
         model_has_dispaly = False
         for b in self.blocks:
-            if isinstance(b, blocks.Display):
+            if isinstance(b, blocks.display.Display):
                 model_has_dispaly = True
 
         if model_has_dispaly == True:

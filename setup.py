@@ -13,6 +13,6 @@ setup(
         ],
         
     package_dir={'simple_sim':'src/simple_sim'},
-    packages=['simple_sim'],
+    packages=['simple_sim','simple_sim.blocks'],
 
 )
