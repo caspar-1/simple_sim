@@ -52,7 +52,7 @@ class key_listner(threading.Thread):
         return key
 
     def stop(self):
-        if self.listener is not False:
+        if self.listener is not None:
             logger.debug("stop key listner")
             self.listener.stop()
 

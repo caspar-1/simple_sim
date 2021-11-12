@@ -29,7 +29,7 @@ class Model():
 
     def add_block(self, blk):
         if not isinstance(blk, blocks.block.Block):
-            raise Block_exception_invalid_class
+            raise blocks.exceptions.Block_exception_invalid_class
 
         self.blocks.append(blk)
 
@@ -72,20 +72,29 @@ class Model():
             logger.debug("""linking  o/p "{}"---->"{}{}" i/p""".format(_src.name,_load.name,"" if load_pin_name==None else ":{}".format(load_pin_name)))
             _load.add_input(_src,pin_name=load_pin_name)
         else:
-            raise Block_exception_add_input_fail
+            raise blocks.exceptions.Block_exception_add_input_fail
 
     def init(self):
         logger.debug("model initialisation")
         model_has_dispaly = False
-        for b in self.blocks:
-            if isinstance(b, blocks.display.Display):
-                model_has_dispaly = True
+        try:
+            for b in self.blocks:
+                if isinstance(b, blocks.display.Display):
+                    model_has_dispaly = True
 
-        if model_has_dispaly == True:
-            plt.ion()
+                if b.check_is_ok()==False:
+                    raise Model_runtime_exception("BLOCK {}:{} has no valid inputs".format(b.name,b.block_class))
 
-        for b in self.blocks:
-            b.initialise()
+            if model_has_dispaly == True:
+                plt.ion()
+
+            for b in self.blocks:
+                b.initialise()
+
+        except Model_runtime_exception as e:
+            logger.error(e)
+            raise e
+                
 
     @function_timer.decorator
     def run(self, n=1):
@@ -93,9 +102,10 @@ class Model():
         print("Running Model")
         print("Time step  : {}".format(self.ts))
         print("iterations : {}".format(n))
+        run_aborted=False
         k = key_listner()
         k.start()
-        for _ in range(n):
+        for i in range(n):
             update_plots=False
             try:
                 if not k.is_alive():
@@ -111,10 +121,13 @@ class Model():
                 if self.fig and update_plots:
                     self.fig.canvas.draw()
                     self.fig.canvas.flush_events()
-            except Model_runtime_exception:
+            except Model_runtime_exception as e:
+                logger.error(e)
+                run_aborted=True
                 break
 
             except:
+                run_aborted=True
                 break
 
             self.time += self.ts
@@ -123,3 +136,6 @@ class Model():
             b.end_simulation_clean_up()
 
         k.stop()
+        msg="simulation ran for {} iterations out of {}  {}".format(i+1,n,"!! RUN Aborted"if run_aborted else "")
+        print(msg)
+        logger.debug(msg)

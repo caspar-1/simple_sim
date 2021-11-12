@@ -1,9 +1,13 @@
 
 from setuptools import setup
 
+
+exec(open("./src/simple_sim/version.py").read())
+
+
 setup(
     name = "simple_sim",
-    version = "1.0.0",
+    version =__version__,
     description = "a simple fixed step simulation engine",
     author = "Caspar Lucas",
     python_requires='>=3.6',

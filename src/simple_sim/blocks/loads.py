@@ -11,8 +11,9 @@ logger=logging.getLogger(__name__)
 
 class end_point(Block):
     
-    def __init__(self):
-        super().__init__(n_max=1,block_class=end_point.__name__)
+    def __init__(self,**kwargs):
+        name=kwargs.get("name",end_point.__name__)
+        super().__init__(n_max=1,block_class=end_point.__name__,name=name)
 
     def run(self,ts):
         data=self.block_sources[0].out_data
@@ -33,7 +34,8 @@ class File_out(Block):
             return json.JSONEncoder.default(self, obj)
 
     def __init__(self,filename,**kwargs):
-        super().__init__(n_max=1,block_class=File_out.__name__)
+        name=kwargs.get("name",File_out.__name__)
+        super().__init__(n_max=1,block_class=File_out.__name__,name=name)
         self.filename=filename
         self.buff=[]
         self.max_buff_records=kwargs.get("max_records",10)

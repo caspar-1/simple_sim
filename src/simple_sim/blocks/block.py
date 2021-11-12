@@ -7,7 +7,7 @@ logger=logging.getLogger(__name__)
 
 class Block():
     ID=0
-    def __init__(self,n_max,block_class,name=None):
+    def __init__(self,n_max,block_class,name):
         self.block_sources=[]
         self.block_loads=[]
         self.block_output=None
@@ -16,9 +16,9 @@ class Block():
         self.n_inputs=0
         self.max_inputs=n_max
         self.block_class=block_class
-        self.name="{}_{}".format(block_class,Block.ID) if name is None else name
+        self.name="{}_{}".format(name,Block.ID) 
         Block.ID+=1
-        logger.debug("Creating Block :{}".format(self))
+        logger.debug("Creating Block - {}:{}".format(self.name,self.block_class))
 
 
     def __del__(self):
@@ -32,6 +32,18 @@ class Block():
         self.block_sources.append(blk)
         blk.block_loads.append(self)
         self.n_inputs+=1
+    
+    def check_is_ok(self)->bool:
+        """
+        returns:
+        False : not OK
+        True :  OK
+        """
+        error=False
+        error|=(self.n_inputs==0 and self.max_inputs!=0)
+
+        return not error
+    
     
     
     def initialise(self):

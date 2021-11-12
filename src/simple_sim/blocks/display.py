@@ -16,7 +16,8 @@ class Display(Block):
 class Plot(Display):
 
     def __init__(self, **kwargs):
-        super().__init__(n_max=1, block_class=Plot.__name__)
+        name=kwargs.get("name",Plot.__name__)
+        super().__init__(n_max=1, block_class=Plot.__name__,name=name)
         self.ax = kwargs.get("ax", None)
         self.kwargs = kwargs
         self.line = None

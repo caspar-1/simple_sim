@@ -10,14 +10,15 @@ logger=logging.getLogger(__name__)
 
 
 class source(Block):
-    def __init__(self,n_max,block_class):
-        super().__init__(n_max,block_class)
+    def __init__(self,n_max,block_class,name):
+        super().__init__(n_max,block_class,name)
 
 
 class sine_generator(source):
     
     def __init__(self,**kwargs):
-        super().__init__(n_max=0,block_class=sine_generator.__name__)
+        name=kwargs.get("name",sine_generator.__name__)
+        super().__init__(n_max=0,block_class=sine_generator.__name__,name=name)
         self.freq=kwargs.get("freq",1)
         self.apmplitude=kwargs.get("amplitude",1.0)
         self.phase_rads=kwargs.get("phase",0.0)
@@ -33,7 +34,8 @@ class sine_generator(source):
 
 class Noise_generator(source):
     def __init__(self,**kwargs):
-        super().__init__(n_max=0,block_class=Noise_generator.__name__)
+        name=kwargs.get("name",Noise_generator.__name__)
+        super().__init__(n_max=0,block_class=Noise_generator.__name__,name=name)
         self.apmplitude=kwargs.get("amplitude",1.0)
 
     def run(self,ts):
