@@ -49,9 +49,9 @@ class File_out(Block):
     
     
     def run(self,ts):
-        data=self.block_sources[0].out_data
-        if data is not None:
-            self.buff.append(data)
+        if self.data_availible():
+            _data=self.block_sources[0].out_data_obj.data
+            self.buff.append(_data)
             self.max_buff_records_count-=1
             if(self.max_buff_records_count==0):
                 self.max_buff_records_count=self.max_buff_records

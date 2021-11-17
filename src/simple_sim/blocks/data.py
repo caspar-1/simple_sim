@@ -8,6 +8,7 @@ class DATA_FORMATS(Enum):
 
 
 class DATA_TYPES(Enum):
+    BOOL=0
     UINT_8=1
     INT_8=2
     UINT_16=3
@@ -20,21 +21,31 @@ class DATA_TYPES(Enum):
 
 
 __numpy_mapping_type_dict={
+    DATA_TYPES.BOOL:np.byte,
     DATA_TYPES.UINT_8:np.byte,
     DATA_TYPES.INT_8:np.ubyte,
-    DATA_TYPES.UINT_16:np.short,
-    DATA_TYPES.INT_16:np.ushort,
-    DATA_TYPES.UINT_32:np.int,
-    DATA_TYPES.INT_32:np.uint,
-    DATA_TYPES.FLOAT:np.single,
+    DATA_TYPES.UINT_16:np.uint16,
+    DATA_TYPES.INT_16:np.int16,
+    DATA_TYPES.UINT_32:np.uint32,
+    DATA_TYPES.INT_32:np.int32,
+    DATA_TYPES.FLOAT:np.float64,
     DATA_TYPES.DOUBLE:np.double,
-    DATA_TYPES.COMPLEX:np.csingle}
+    DATA_TYPES.COMPLEX:np.complex128}
+
+__numpy_mapping_type_dict_reverse={v.__name__:k for k,v in __numpy_mapping_type_dict.items()}
 
 
-def __get_numpy_mapping_type(data_type:DATA_TYPES)->np.dtype:
+def get_numpy_mapping_type(data_type:DATA_TYPES)->np.dtype:
     if data_type not in __numpy_mapping_type_dict:
             raise excpt.Block_exception_invalid_data_type
     return __numpy_mapping_type_dict[data_type]
+
+def get_mapping_type(np_type:np.dtype)->DATA_TYPES:
+    if str(np_type.name) not in __numpy_mapping_type_dict_reverse:
+            raise excpt.Block_exception_invalid_data_type
+    return __numpy_mapping_type_dict_reverse[str(np_type.name)]
+
+
 
 
         
@@ -43,8 +54,8 @@ class DATA():
         self.sz=sz
         self.data_type=data_type
         self.data_format=data_format
-        self.data=np.zeros(self.buffer_sz,dtype=__get_numpy_mapping_type(data_type))
-
+        self.data=np.zeros(self.sz,dtype=get_numpy_mapping_type(data_type))
+        
     def check_type(self,expected:DATA_TYPES)->bool:
         return (self.data_type==expected)
 
@@ -57,6 +68,10 @@ class DATA():
     def get_data(self):
         return self.data
 
+
+ 
+
+
 class STREAM_DATA(DATA):
     def __init__(self,data_type:DATA_TYPES=DATA_TYPES.FLOAT)->None:
         super().__init__(1,DATA_FORMATS.STREAM_DATA,data_type)
@@ -64,5 +79,15 @@ class STREAM_DATA(DATA):
 class ARRAY_DATA(DATA):
     def __init__(self,buffer_sz:int,data_type:DATA_TYPES=DATA_TYPES.FLOAT)->None:
         super().__init__(buffer_sz,DATA_FORMATS.ARRAY_DATA,data_type)
+
+    @staticmethod
+    def from_data(data):
+        _obj=None
+        if isinstance(data, np.ndarray):
+            _sz=data.shape[0]
+            _type=get_mapping_type(data.dtype)
+            _obj=ARRAY_DATA(_sz,_type)
+            _obj.data=data
+        return _obj
         
 

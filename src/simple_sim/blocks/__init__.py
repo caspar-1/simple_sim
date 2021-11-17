@@ -5,3 +5,5 @@ from . import exceptions
 from . import functions
 from . import loads
 from . import sources
+from . import dsp
+from . import gui_controls

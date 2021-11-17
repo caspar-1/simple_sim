@@ -11,8 +11,9 @@ class Block():
         self.block_sources=[]
         self.block_loads=[]
         self.block_output=None
-        self.data=None
-        self.out_data=None
+        self.data_obj=None
+        self.out_data_obj=None
+        self.out_data_valid=False
         self.n_inputs=0
         self.max_inputs=n_max
         self.block_class=block_class
@@ -44,7 +45,11 @@ class Block():
 
         return not error
     
-    
+    def data_availible(self):
+        data_ready=True
+        for b in self.block_sources:
+            data_ready&=b.out_data_valid
+        return data_ready
     
     def initialise(self):
         pass
@@ -53,10 +58,10 @@ class Block():
         return False
 
     def update_out_data(self):
-        self.out_data=self.data
+        self.out_data_obj=self.data_obj
 
     def get_data(self):
-        return self.out_data
+        return self.out_data_obj
 
     def get_out_data_type(self):
         raise NotImplementedError
@@ -65,6 +70,6 @@ class Block():
         pass
 
     def __repr__(self):
-        s="{}:{}:{}".format(self.name,self.block_class,self.out_data)
+        s="{}:{}".format(self.name,self.block_class)
         return s
 

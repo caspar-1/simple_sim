@@ -25,43 +25,44 @@ logger=logging.getLogger(__name__)
 if __name__=="__main__":
 
     model=runtime.Model()
-    model.create_plot(1,2,title="test 1")
-    sine_1=blocks.sources.sine_generator(freq=10.1,amplitude=1)
-    noise=blocks.sources.Noise_generator(amplitude=0.1)
+    model.create_plot(2,2,title="test 1")
+    sine_1=blocks.sources.sine_generator(freq=300,amplitude=1)
+    noise=blocks.sources.Noise_generator(amplitude=0.5)
     sum=blocks.functions.Sum()
-    rate_down=blocks.dsp.RATE_CHANGE(rate=0.2)
-    rate_up=blocks.dsp.RATE_CHANGE()
-    p1=blocks.display.Plot_Wndw(ax=model.axes[0])
-    p2=blocks.display.Plot_Wndw(ax=model.axes[1])
-    l1 = p1.get_line_plot(fmt="g")
-    l2 = p2.get_line_plot(fmt="r")
-    buff_1=blocks.functions.Buffer(sz=500)
-    buff_2=blocks.functions.Buffer(sz=500)
+   
+    absolute=blocks.functions.ABS(name="TEST_ABS")
+    buff_1=blocks.functions.Buffer(sz=1024)
+    buff_2=blocks.functions.Buffer(sz=50)
+    ep=blocks.loads.end_point()
+    fft=blocks.dsp.FFT(normalise=False)
+    fft_d=blocks.dsp.FFT_DISPLAY()
+    ifft=blocks.dsp.FFT()
+    p1=blocks.display.Plot_Wndw(ax=model.axes[0,0])
+    p2=blocks.display.Plot_Wndw(ax=model.axes[0,1])
+    l1 = p1.get_line_plot(fmt="b")
+    l2 = p2.get_line_plot(fmt="b")
 
 
     model.add_block(sine_1)
     model.add_block(noise)
     model.add_block(sum)
-    model.add_block(rate_down)
-    model.add_block(rate_up)
     model.add_block(buff_1)
     model.add_block(buff_2)
+    model.add_block(fft)
     model.add_block(l1)
     model.add_block(l2)
-    
+    model.add_block(fft_d)
 
 
     model.link_block(sine_1,sum)
     model.link_block(noise,sum)
     model.link_block(sum,buff_1)
+    model.link_block(sum,buff_2)
+    model.link_block(buff_1,fft)
+    model.link_block(fft,fft_d)
+    model.link_block(fft_d,l2)
+    model.link_block(buff_2,l1)
 
-    model.link_block(sum,rate_down)
-    model.link_block(rate_down,rate_up)
-
-    model.link_block(rate_up,buff_2)
-
-    model.link_block(buff_1,l1)
-    model.link_block(buff_2,l2)
 
     try:
         model.init()

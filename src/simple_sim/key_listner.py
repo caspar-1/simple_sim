@@ -53,8 +53,9 @@ class key_listner(threading.Thread):
 
     def stop(self):
         if self.listener is not None:
-            logger.debug("stop key listner")
             self.listener.stop()
+            self.listener.join()
+            logger.debug("key listner stopped")
 
 
 
