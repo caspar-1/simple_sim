@@ -31,7 +31,9 @@ class Line_plot(Display):
         self.line=None
         self.plt_args={}
 
-
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
 
     def run(self, ts):
 

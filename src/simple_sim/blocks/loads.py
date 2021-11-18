@@ -15,6 +15,11 @@ class end_point(Block):
         name=kwargs.get("name",end_point.__name__)
         super().__init__(n_max=1,block_class=end_point.__name__,name=name)
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
+
     def run(self,ts):
         data=self.block_sources[0].out_data
         if data is not None:
@@ -40,6 +45,10 @@ class File_out(Block):
         self.buff=[]
         self.max_buff_records=kwargs.get("max_records",10)
         self.max_buff_records_count=self.max_buff_records
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
 
     def flush(self):
         with open (self.filename,"w+") as fh:

@@ -26,6 +26,10 @@ class RATE_CHANGE(DSP):
             self.convert_fn=self._convert_down
         self.count=0
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
     def _convert_up(self,data_avilible,data):
         if(data_avilible):
             self.data_obj.data=data
@@ -61,6 +65,10 @@ class WINDOW(DSP):
         self.window=None
         self.window_fnct=np.hamming
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
     def run(self,ts):
         if self.data_availible():  
             data_in=self.block_sources[0].out_data_obj.data
@@ -93,6 +101,10 @@ class FFT(DSP):
         self.data_obj=None
         self._norm=kwargs.get("normalise",False)
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+    
     def run(self,ts):    
         
         if self.data_availible():
@@ -121,6 +133,7 @@ class FFT_DISPLAY(DSP):
         self._real_f=kwargs.get("real_f",True)
         self._norm=kwargs.get("normalise",True)
         self._abs=kwargs.get("abs",True)
+        self._log=kwargs.get("log",True)
 
         
     def run(self,ts):    
@@ -141,6 +154,9 @@ class FFT_DISPLAY(DSP):
                 
             if self._abs:
                 _data=np.abs(_data)
+
+            if self._log:
+                _data=20*np.log10(_data)
 
             if(self.data_obj is None):
                 self.data_obj=data.ARRAY_DATA.from_data(_data)

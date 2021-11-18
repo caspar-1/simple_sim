@@ -27,12 +27,14 @@ if __name__=="__main__":
     model=runtime.Model(time_step=1e-3)
     model.create_plot(1,2,title="test 1")
     sine_1=blocks.sources.sine_generator(freq=50,amplitude=1)
+    sine_2=blocks.sources.sine_generator(freq=300,amplitude=1)
     noise_1=blocks.sources.Noise_generator(amplitude=1)
-    slider_freq=blocks.gui_controls.Gui_slider(min=10,max=500,name="Frequency")
+    slider_freq=blocks.gui_controls.Gui_slider(min=10,max=500,name="Frequency",steps=1000)
     slider_phase=blocks.gui_controls.Gui_slider(min=0,max=np.pi*2,name="Phase")
     slider_noise=blocks.gui_controls.Gui_slider(min=0,max=2,name="Noise")
     buff = blocks.functions.Buffer(sz=512)
     sum = blocks.functions.Sum()
+    mul = blocks.functions.Multiplier()
     fft=blocks.dsp.FFT()
     fft_d = blocks.dsp.FFT_DISPLAY()
     window=blocks.dsp.WINDOW()
@@ -44,8 +46,9 @@ if __name__=="__main__":
 
 
     model.add_block(sine_1)
+    model.add_block(sine_2)
     model.add_block(noise_1)
-    
+    model.add_block(mul)
     model.add_block(sum)
     
     model.add_block(buff)
@@ -62,7 +65,9 @@ if __name__=="__main__":
     sine_1.phase_input.connect(slider_phase)
     noise_1.amplitude_input.connect(slider_noise)
 
-    model.link_block(sine_1,sum)
+    model.link_block(sine_1,mul)
+    model.link_block(sine_2,mul)
+    model.link_block(mul,sum)
     model.link_block(noise_1,sum)
     model.link_block(sum,buff)
     model.link_block(buff,l1)

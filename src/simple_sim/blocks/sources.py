@@ -35,6 +35,10 @@ class sine_generator(source):
         self.data_obj = data.STREAM_DATA()
         self.input_frequency = None
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
     def run(self, ts):
         _freq = self.freq_input.get()
         _amp = self.amplitude_input.get()
@@ -50,8 +54,12 @@ class Noise_generator(source):
         name = kwargs.get("name", Noise_generator.__name__)
         super().__init__(n_max=0, block_class=Noise_generator.__name__, name=name)
         _apmplitude = kwargs.get("amplitude", 1.0)
-        self.amplitude_input = Input("amplitude", _apmplitude)
+        self.amplitude_input = NamedInput("amplitude", _apmplitude)
         self.data_obj = data.STREAM_DATA()
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
 
     def run(self, ts):
         _amp = self.amplitude_input.get()
@@ -66,6 +74,10 @@ class Random_Digital_generator(source):
         super().__init__(n_max=0, block_class=Random_Digital_generator.__name__, name=name)
         self.nbits = kwargs.get("nbits", 8)
         self.data_obj = data.ARRAY_DATA(self.nbits, data_type=data.DATA_TYPES.BOOL)
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
 
     def run(self, ts):
         self.data_obj.set_data(np.random.binomial(n=1, p=0.5, size=(self.nbits)))

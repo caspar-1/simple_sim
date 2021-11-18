@@ -122,6 +122,10 @@ class Gui_slider(GUI_BLOCK):
         self.gui_obj=Slider(label=name,min=self.min,max=self.max,steps=self.steps,tick=self.ticks)
         self.data_obj=data.STREAM_DATA()
 
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
     def run(self,ts):
         self.data_obj.set_data(self.gui_obj.value)
         self.out_data_valid=True

@@ -24,8 +24,8 @@ class GUI:
             print("Destroying GUI at:", time.time())
             try: 
                 self.root.quit()
+                
             except:
-            
                 pass
 
     def tkinter_loop(self):
@@ -39,6 +39,7 @@ class GUI:
         self.root.after_idle(self.periodic_call)
         self.root.mainloop()
         self.is_running=False
+       
         print("TKinter main loop finished")
 
     def start(self):
