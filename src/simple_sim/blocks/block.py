@@ -5,6 +5,57 @@ from . import exceptions as excpt
 logger=logging.getLogger(__name__)
 
 
+
+class Input():
+    def __init__(self, name, default):
+        self.source = None
+
+    def connect(self,source):
+        if self.source is None:
+            self.source=source
+        else:
+            raise excpt.Block_exception_add_input_fail
+
+    def get(self):
+        if self.source is not None:
+            if self.source.out_data_obj:
+                self.value = self.source.out_data_obj.data
+
+        return self.value
+
+
+
+
+
+class NamedInput():
+    def __init__(self, name, default):
+        self.name = name
+        self.value = default
+        self.source = None
+
+    def connect(self,source):
+        if self.source is None:
+            self.source=source
+        else:
+            raise excpt.Block_exception_add_input_fail
+
+    def get(self):
+
+        if self.source is not None:
+            if self.source.out_data_obj:
+                self.value = self.source.out_data_obj.data
+
+        return self.value
+
+
+
+
+
+
+
+
+
+
 class Block():
     ID=0
     def __init__(self,n_max,block_class,name):

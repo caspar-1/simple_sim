@@ -52,8 +52,38 @@ class RATE_CHANGE(DSP):
         
         return False
 
+class WINDOW(DSP):
+    
+    def __init__(self,**kwargs):
+        name=kwargs.get("name",WINDOW.__name__)
+        super().__init__(n_max=1,block_class=WINDOW.__name__,name=name)
+        self.data_obj=None
+        self.window=None
+        self.window_fnct=np.hamming
+
+    def run(self,ts):
+        if self.data_availible():  
+            data_in=self.block_sources[0].out_data_obj.data
+            if self.window is None:
+                self.window=self.window_fnct(len(data_in))
+
+            windowed_data=data_in*self.window
+
+            if(self.data_obj is None):
+                self.data_obj=data.ARRAY_DATA.from_data(windowed_data)
+            else:
+                self.data_obj.data=windowed_data
+
+            self.out_data_valid=True
+        else:
+            self.out_data_valid=False
+        
+        return False
 
 
+
+
+    
 
 class FFT(DSP):
     

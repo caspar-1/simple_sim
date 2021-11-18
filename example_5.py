@@ -11,7 +11,7 @@ if DEVEL:
 import simple_sim
 from simple_sim import runtime,blocks,custom_exceptions
 import logging
-
+import numpy as np
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -24,27 +24,53 @@ logger=logging.getLogger(__name__)
 
 if __name__=="__main__":
 
-    model=runtime.Model()
-    model.create_plot(1,1,title="test 1")
+    model=runtime.Model(time_step=1e-3)
+    model.create_plot(1,2,title="test 1")
     sine_1=blocks.sources.sine_generator(freq=50,amplitude=1)
-    slider=blocks.gui_controls.Gui_slider(min=-1,max=1)
-    buff = blocks.functions.Buffer(sz=500)
+    noise_1=blocks.sources.Noise_generator(amplitude=1)
+    slider_freq=blocks.gui_controls.Gui_slider(min=10,max=500,name="Frequency")
+    slider_phase=blocks.gui_controls.Gui_slider(min=0,max=np.pi*2,name="Phase")
+    slider_noise=blocks.gui_controls.Gui_slider(min=0,max=2,name="Noise")
+    buff = blocks.functions.Buffer(sz=512)
     sum = blocks.functions.Sum()
+    fft=blocks.dsp.FFT()
+    fft_d = blocks.dsp.FFT_DISPLAY()
+    window=blocks.dsp.WINDOW()
    
-    p1=blocks.display.Plot_Wndw(ax=model.axes)
+    p1=blocks.display.Plot_Wndw(ax=model.axes[0])
+    p2=blocks.display.Plot_Wndw(ax=model.axes[1])
     l1 = p1.get_line_plot(fmt="b")
+    l2 = p2.get_line_plot(fmt="b")
 
 
     model.add_block(sine_1)
-    model.add_block(l1)
-    model.add_block(buff)
-    model.add_block(slider)
+    model.add_block(noise_1)
+    
     model.add_block(sum)
+    
+    model.add_block(buff)
+    model.add_block(slider_freq)
+    model.add_block(slider_phase)
+    model.add_block(slider_noise)
+    model.add_block(window)
+    model.add_block(fft)
+    model.add_block(fft_d)
+    model.add_block(l1)
+    model.add_block(l2)
+
+    sine_1.freq_input.connect(slider_freq)
+    sine_1.phase_input.connect(slider_phase)
+    noise_1.amplitude_input.connect(slider_noise)
 
     model.link_block(sine_1,sum)
-    model.link_block(slider,sum)
+    model.link_block(noise_1,sum)
     model.link_block(sum,buff)
     model.link_block(buff,l1)
+    model.link_block(buff,window)
+    model.link_block(window,fft)
+    model.link_block(fft,fft_d)
+    model.link_block(fft_d,l2)
+
 
 
     try:
