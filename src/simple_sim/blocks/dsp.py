@@ -1,8 +1,11 @@
 import logging
 import numpy as np
+import scipy.signal as signal
 from . import exceptions as excpt
-from .block import Block
+from .block import Block,Input,NamedInput
 from . import data as data
+
+
 
 logger=logging.getLogger(__name__)
 
@@ -16,6 +19,7 @@ class RATE_CHANGE(DSP):
     def __init__(self,**kwargs):
         name=kwargs.get("name",RATE_CHANGE.__name__)
         super().__init__(n_max=1,block_class=RATE_CHANGE.__name__,name=name)
+        
         self.data_obj=data.STREAM_DATA()
         rate=kwargs.get("rate",2)
         if rate>1:
@@ -170,3 +174,33 @@ class FFT_DISPLAY(DSP):
         return False
 
 
+class FILTER_CHEB_LP(DSP):
+    
+    def __init__(self,**kwargs):
+        name=kwargs.get("name",FILTER_CHEB_LP.__name__)
+        super().__init__(n_max=1,block_class=FILTER_CHEB_LP.__name__,name=name)
+        self.data_obj=None
+        self._n=kwargs.get("N",3)
+        self._rp=kwargs.get("rp",0.1)
+        self._wn=kwargs.get("wn",0.1)
+        
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        self.sos=signal.cheby1(N=self._n,rp=self._rp,Wn=[self._wn],btype="low",output="sos")
+    
+    def run(self,ts):    
+        
+        if self.data_availible():
+            data_obj=self.block_sources[0].out_data_obj
+            _fft=signal.sosfilt(self.sos, data_obj.data)
+
+            if(self.data_obj is None):
+                self.data_obj=data.ARRAY_DATA.from_data(_fft)
+            else:
+                self.data_obj.data=_fft
+            self.out_data_valid=True
+        else:
+            self.out_data_valid=False
+   
+        return False
