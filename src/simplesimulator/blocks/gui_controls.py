@@ -1,45 +1,51 @@
-import logging
+
 import numpy as np
 from . import exceptions as excpt
 from .block import Block
-
+import multiprocessing
 from . import data as data
 
+import logging
 logger=logging.getLogger(__name__)
 
 
 from tkinter import *
-import time
-import threading
+
 
 class GUI_CNTRL():
     def __init__(self):
         self._value =None
+        self.multiprocessing_shared_value=multiprocessing.Value('d',0.0)
+
+    def add_cntrl(self,n):
+        self.shared=n
 
     @property
     def value(self):
-        return self._value.get()
+        return self.multiprocessing_shared_value.value
 
     def callback(self):
-        pass
-
-
+        v=self._value.get()
+        self.shared.value=v
 
 
 class CheckBox(GUI_CNTRL):
     def __init__(self,**kwargs):
         super().__init__()
         self.label=kwargs.get("label","checkbox")
+        self.multiprocessing_shared_value.value=0
 
-    def callback(self):
-        print(self.value.get())
-    
     def add_cntrl(self,root):
         self._value=IntVar()
         lf=LabelFrame(root,text=self.label,relief=RIDGE)
         lf.pack(anchor=W)
-        _cntrl= Checkbutton(lf, text=self.label,variable=self.value, command=self.callback)
+        _cntrl= Checkbutton(lf, text=self.label,variable=self._value, command=self.callback)
         _cntrl.pack(anchor=W)
+        super().add_cntrl(self.multiprocessing_shared_value)
+
+    @property
+    def value(self):
+        return int(self.multiprocessing_shared_value.value)
 
 
 class RadioGroup(GUI_CNTRL):
@@ -54,9 +60,11 @@ class RadioGroup(GUI_CNTRL):
             _cntrl.pack(anchor=W)
 
     def __init__(self,**kwargs):
+        super().__init__()
         self.label=kwargs.get("label","radio group")
         self.cntrls=[]
         self.idx=1
+        self.multiprocessing_shared_value.value=0
 
     def add(self,label):
         self.cntrls.append(RadioGroup.RadioButton(label=label))
@@ -69,6 +77,11 @@ class RadioGroup(GUI_CNTRL):
         for r in self.cntrls:
             r.add_cntrl(lf,self,self.idx)
             self.idx+=1
+        super().add_cntrl(self.multiprocessing_shared_value)
+
+    @property
+    def value(self):
+        return int(self.multiprocessing_shared_value.value)
 
 
 class Slider(GUI_CNTRL):
@@ -80,6 +93,7 @@ class Slider(GUI_CNTRL):
         self.ticks=kwargs.get("ticks",(self.max-self.min)/2)
         self.label=kwargs.get("label",None)
         self.resolution=abs((self.max-self.min)/self.steps)
+        self.multiprocessing_shared_value.value=self.min
 
     def callback(self,v):
         super().callback()
@@ -100,6 +114,7 @@ class Slider(GUI_CNTRL):
             command=self.callback
             )
         _cntrl.pack(anchor=W)
+        super().add_cntrl(self.multiprocessing_shared_value)
 
 
 

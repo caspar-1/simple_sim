@@ -2,11 +2,11 @@
 
 import matplotlib.pyplot as plt
 import logging
-from simple_sim.key_listner import key_listner
-from simple_sim.custom_exceptions import *
-import simple_sim.function_timer as function_timer
-import simple_sim.blocks  as blocks
-import simple_sim.gui as gui
+from simplesimulator.key_listner import key_listner
+from simplesimulator.custom_exceptions import *
+import simplesimulator.function_timer as function_timer
+import simplesimulator.blocks  as blocks
+import simplesimulator.gui as gui
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -20,7 +20,8 @@ class Model():
     def __init__(self,**kwargs):
         self.time = 0.0
         self.ts = kwargs.get("time_step",1e-3)
-        self.blocks = []
+        self.registered_blocks = []
+        self.runtime_blocks = []
         self.gui_interface=None
         self.fig = None
         self.axes = None
@@ -38,7 +39,7 @@ class Model():
         if not isinstance(blk, blocks.block.Block):
             raise blocks.exceptions.Block_exception_invalid_class
 
-        self.blocks.append(blk)
+        self.registered_blocks.append(blk)
 
     def __get_block(self, obj):
         blk = None
@@ -46,7 +47,7 @@ class Model():
             name = obj.name
         elif isinstance(obj, str):
             name = obj
-        for b in self.blocks:
+        for b in self.registered_blocks:
             if name == b.name:
                 blk = b
                 break
@@ -86,7 +87,17 @@ class Model():
         model_has_dispaly = False
         gui_blocks=[]
         try:
-            for b in self.blocks:
+            
+            for b in self.registered_blocks:
+                if b.check_is_ok()==True:
+                    self.runtime_blocks.append(b)
+                else:
+                    logger.debug("BLOCK {}:{} has no valid inputs".format(b.name,b.block_class))
+
+            
+            
+            
+            for b in self.runtime_blocks:
                 if isinstance(b, blocks.display.Display):
                     logger.debug("found display block :{}".format(b.name))
                     model_has_dispaly = True
@@ -95,8 +106,7 @@ class Model():
                     logger.debug("found gui block :{}".format(b.name))
                     gui_blocks.append(b.gui_obj)
 
-                if b.check_is_ok()==False:
-                    raise Model_runtime_exception("BLOCK {}:{} has no valid inputs".format(b.name,b.block_class))
+
 
             if model_has_dispaly == True:
                 plt.ion()
@@ -104,7 +114,7 @@ class Model():
             if len(gui_blocks):
                 self.gui_interface=gui.GUI(gui_blocks)
 
-            for b in self.blocks:
+            for b in self.runtime_blocks:
                 b.initialise()
 
         except Model_runtime_exception as e:
@@ -120,49 +130,37 @@ class Model():
         print("iterations : {}".format(n))
         run_aborted=False
         k = key_listner()
+        k.start()
 
         if self.gui_interface:
             self.gui_interface.start()
 
-
-        k.start()
         for i in range(n):
             update_plots=False
             try:
-                
-                
+
                 if self.gui_interface:
-                    if(self.gui_interface.is_running==False):
+                    if(self.gui_interface.is_alive==False):
                         raise AbortException
-                
-                
+
                 if not k.is_alive():
                     break
-                
-                try:
-                    for b in self.blocks:
+
+                for b in self.runtime_blocks:
+                    try:
                         b.update_out_data()
-                except:
-                    logger.error("failed update_out_data :{}".format(b.name))
+                    except:
+                        logger.error("failed update_out_data :{}".format(b.name))
 
-                try:
-                    for b in self.blocks:
+                for b in self.runtime_blocks:
+                    try:
                         update_plots|=b.run(self.time)
-                except:
-                    logger.error("failed run :{}".format(b.name))
+                    except:
+                        logger.error("failed run :{}".format(b.name))
 
-                try:
-                    for b in self.blocks:
-                        # print(b)
-                        pass
-                except:
-                    logger.error("failed :{}".format(b.name))
-                
-                
                 if self.plot_update_count!=0:
                     self.plot_update_count-=1
-                
-                
+
                 if self.fig:
                     if not plt.fignum_exists(self.fig.number):
                         raise Model_runtime_exception
@@ -186,7 +184,7 @@ class Model():
 
             self.time += self.ts
 
-        for b in self.blocks:
+        for b in self.runtime_blocks:
             b.end_simulation_clean_up()
 
         

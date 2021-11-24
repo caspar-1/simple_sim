@@ -1,17 +1,6 @@
 import sys
-
-DEVEL=True
-
-if DEVEL:
-    local_path="./src/"
-    if local_path not in sys.path:
-        sys.path.append(local_path)
-
-
-import simple_sim
-from simple_sim import runtime,blocks,custom_exceptions
+from simplesimulator import runtime,blocks,custom_exceptions
 import logging
-
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -27,12 +16,12 @@ if __name__=="__main__":
     model=runtime.Model()
     model.create_plot(1,2,title="test 1")
     sine_1=blocks.sources.sine_generator(freq=10.1,amplitude=1)
-    noise=blocks.sources.Noise_generator(amplitude=0.1)
+    noise=blocks.sources.Noise_generator(amplitude=0.01)
     sum=blocks.functions.Sum()
-    rate_down=blocks.dsp.RATE_CHANGE(rate=0.2)
+    rate_down=blocks.dsp.RATE_CHANGE(rate=0.1)
     rate_up=blocks.dsp.RATE_CHANGE()
-    p1=blocks.display.Plot_Wndw(ax=model.axes[0])
-    p2=blocks.display.Plot_Wndw(ax=model.axes[1])
+    p1=blocks.display.Plot_Wndw(ax=model.axes[0],title="sss",ylim=(-2,2))
+    p2=blocks.display.Plot_Wndw(ax=model.axes[1],ylim=(-2,2))
     l1 = p1.get_line_plot(fmt="g")
     l2 = p2.get_line_plot(fmt="r")
     buff_1=blocks.functions.Buffer(sz=500)

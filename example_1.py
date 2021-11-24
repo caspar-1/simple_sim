@@ -1,17 +1,6 @@
 import sys
-DEVEL = True
-
-if DEVEL:
-    local_path = "./src/"
-    if local_path not in sys.path:
-        sys.path.append(local_path)
-        
-from simple_sim import runtime, blocks, custom_exceptions
+from simplesimulator import runtime, blocks, custom_exceptions
 import logging
-import simple_sim
-
-
-
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -36,14 +25,14 @@ if __name__ == "__main__":
     sum = blocks.functions.Sum()
     mul = blocks.functions.Multiplier()
     absolute = blocks.functions.ABS(name="TEST_ABS")
-    buff = blocks.functions.Buffer(sz=2048)
+    buff = blocks.functions.Buffer(sz=512)
     ep = blocks.loads.end_point()
     fft = blocks.dsp.FFT(normalise=True)
     fft_d = blocks.dsp.FFT_DISPLAY()
     ifft = blocks.dsp.FFT()
-    p1 = blocks.display.Plot_Wndw(ax=model.axes[0, 0],title="sss")
+    p1 = blocks.display.Plot_Wndw(ax=model.axes[0, 0],title="input",ylim=(-10,10))
     p2 = blocks.display.Plot_Wndw(ax=model.axes[0, 1])
-    p4 = blocks.display.Plot_Wndw(ax=model.axes[1, 1])
+    p4 = blocks.display.Plot_Wndw(ax=model.axes[1, 1],title="output",ylim=(-10,10))
     window=blocks.dsp.WINDOW()
 
     l1 = p1.get_line_plot(fmt="r--")

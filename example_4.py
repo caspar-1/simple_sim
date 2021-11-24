@@ -1,17 +1,6 @@
 import sys
-
-DEVEL=True
-
-if DEVEL:
-    local_path="./src/"
-    if local_path not in sys.path:
-        sys.path.append(local_path)
-
-
-import simple_sim
-from simple_sim import runtime,blocks,custom_exceptions
+from simplesimulator import runtime,blocks,custom_exceptions
 import logging
-
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -25,20 +14,20 @@ logger=logging.getLogger(__name__)
 if __name__=="__main__":
 
     model=runtime.Model()
-    model.create_plot(2,2,title="test 1")
-    sine_1=blocks.sources.sine_generator(freq=300,amplitude=1)
-    noise=blocks.sources.Noise_generator(amplitude=0.5)
+    model.create_plot(2,1,title="test 1")
+    sine_1=blocks.sources.sine_generator(freq=100,amplitude=1)
+    noise=blocks.sources.Noise_generator(amplitude=0.1)
     sum=blocks.functions.Sum()
    
     absolute=blocks.functions.ABS(name="TEST_ABS")
-    buff_1=blocks.functions.Buffer(sz=1024)
-    buff_2=blocks.functions.Buffer(sz=50)
+    buff_1=blocks.functions.Buffer(sz=2048)
+    buff_2=blocks.functions.Buffer(sz=512)
     ep=blocks.loads.end_point()
     fft=blocks.dsp.FFT(normalise=False)
     fft_d=blocks.dsp.FFT_DISPLAY()
     ifft=blocks.dsp.FFT()
-    p1=blocks.display.Plot_Wndw(ax=model.axes[0,0])
-    p2=blocks.display.Plot_Wndw(ax=model.axes[0,1])
+    p1=blocks.display.Plot_Wndw(ax=model.axes[0],ylim=(-2,2))
+    p2=blocks.display.Plot_Wndw(ax=model.axes[1],ylim=(-60,10))
     l1 = p1.get_line_plot(fmt="b")
     l2 = p2.get_line_plot(fmt="b")
 

@@ -1,17 +1,6 @@
 import sys
-
-DEVEL=True
-
-if DEVEL:
-    local_path="./src/"
-    if local_path not in sys.path:
-        sys.path.append(local_path)
-
-
-import simple_sim
-from simple_sim import runtime,blocks,custom_exceptions
+from simplesimulator import runtime,blocks,custom_exceptions
 import logging
-
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True

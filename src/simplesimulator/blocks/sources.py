@@ -72,14 +72,14 @@ class Random_Digital_generator(source):
     def __init__(self, **kwargs):
         name = kwargs.get("name", Random_Digital_generator.__name__)
         super().__init__(n_max=0, block_class=Random_Digital_generator.__name__, name=name)
-        self.nbits = kwargs.get("nbits", 8)
-        self.data_obj = data.ARRAY_DATA(self.nbits, data_type=data.DATA_TYPES.BOOL)
+        self.buff_size = kwargs.get("nbits", 8)
+        self.data_obj = data.ARRAY_DATA(self.buff_size, data_type=data.DATA_TYPES.BOOL)
 
     def initialise(self):
         logger.debug("initialise {}".format(self.name))
         pass
 
     def run(self, ts):
-        self.data_obj.set_data(np.random.binomial(n=1, p=0.5, size=(self.nbits)))
+        self.data_obj.set_data(np.random.binomial(n=1, p=0.5, size=(self.buff_size)))
         self.out_data_valid = True
         return False
