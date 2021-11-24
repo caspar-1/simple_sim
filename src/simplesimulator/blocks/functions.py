@@ -118,6 +118,31 @@ class ABS(Block):
         return False
 
 
+class REAL(Block):
+    
+    def __init__(self,**kwargs):
+        name=kwargs.get("name",REAL.__name__)
+        super().__init__(n_max=1,block_class=REAL.__name__,name=name)
+        self.data_obj=data.STREAM_DATA()
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+
+    def run(self,ts):
+        if self.data_availible():
+            data_obj=self.block_sources[0].out_data_obj
+            self.data_obj.data=np.real(data_obj.data)                      
+            self.out_data_valid=True
+        else:
+            self.out_data_valid=False
+           
+        
+        return False
+
+
+
+
 
 class Buffer(Block):
     

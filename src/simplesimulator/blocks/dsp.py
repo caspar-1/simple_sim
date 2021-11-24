@@ -92,11 +92,6 @@ class WINDOW(DSP):
         
         return False
 
-
-
-
-    
-
 class FFT(DSP):
     
     def __init__(self,**kwargs):
@@ -119,6 +114,35 @@ class FFT(DSP):
                 sz=(_fft.shape[0])
                 _fft=_fft/sz
 
+
+            if(self.data_obj is None):
+                self.data_obj=data.ARRAY_DATA.from_data(_fft)
+            else:
+                self.data_obj.data=_fft
+            self.out_data_valid=True
+        else:
+            self.out_data_valid=False
+   
+        return False
+
+
+class IFFT(DSP):
+    
+    def __init__(self,**kwargs):
+        name=kwargs.get("name",IFFT.__name__)
+        super().__init__(n_max=1,block_class=IFFT.__name__,name=name)
+        self.data_obj=None
+
+
+    def initialise(self):
+        logger.debug("initialise {}".format(self.name))
+        pass
+    
+    def run(self,ts):    
+        
+        if self.data_availible():
+            data_obj=self.block_sources[0].out_data_obj
+            _fft=np.fft.ifft(data_obj.data)
 
             if(self.data_obj is None):
                 self.data_obj=data.ARRAY_DATA.from_data(_fft)

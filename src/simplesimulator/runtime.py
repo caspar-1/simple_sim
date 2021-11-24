@@ -33,7 +33,9 @@ class Model():
         plt.ion()
         title = kwargs.get("title", "")
         self.fig, self.axes = plt.subplots(rows, cols)
+        self.fig.canvas.set_window_title('Simple Simulator')
         self.fig.suptitle(title, fontsize=16)
+        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 
     def add_block(self, blk):
         if not isinstance(blk, blocks.block.Block):

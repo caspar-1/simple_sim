@@ -45,7 +45,6 @@ class Line_plot(Display):
                     self.line, = self.plot_window.ax.plot(x, data,self.fmt,**self.plt_args)
                 else:
                     self.line.set_ydata(data)
-                self.plot_window.ax.set_ylim(self.plot_window.ylim)
             except:
                 raise excpt.Model_runtime_exception
 
@@ -55,11 +54,6 @@ class Line_plot(Display):
                 __run(data_obj.data)
                 return True
         return False
-
-
-
-
-
 
 
 class Plot_Wndw(Display):
@@ -75,6 +69,7 @@ class Plot_Wndw(Display):
         self.ylim=kwargs.get("ylim",(-1,1))
         self.xlim=kwargs.get("xlim",(0,0.5))
         self.plt_args = dict()
+        self.initialise()
 
 
     def initialise(self):
@@ -84,6 +79,7 @@ class Plot_Wndw(Display):
         else:
             self.fig = self.ax.figure
         self.ax.set_title(self.title)
+        self.ax.set_ylim(self.ylim)
         
         
 
