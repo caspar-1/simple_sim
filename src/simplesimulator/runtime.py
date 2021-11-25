@@ -8,6 +8,7 @@ import simplesimulator.misc.function_timer as function_timer
 import simplesimulator.blocks  as blocks
 import simplesimulator.gui_controls.gui as gui
 import simplesimulator.gui_controls as gui_controls
+import os
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 logger = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ class AbortException(Exception):
 
 class Model():
     def __init__(self,**kwargs):
+        logger.debug("Initialising Runtime Model [Process PID={}]".format(os.getpid()))
+        
         self.time = 0.0
         self.ts = kwargs.get("time_step",1e-3)
         self.registered_blocks = []
@@ -33,7 +36,7 @@ class Model():
         plt.ion()
         title = kwargs.get("title", "")
         self.fig, self.axes = plt.subplots(rows, cols)
-        self.fig.canvas.set_window_title('Simple Simulator')
+        self.fig.canvas.set_window_title('Simple Simulator [PID={}]'.format(os.getpid()))
         self.fig.suptitle(title, fontsize=16)
         plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 
@@ -130,6 +133,7 @@ class Model():
         print("Running Model")
         print("Time step  : {}".format(self.ts))
         print("iterations : {}".format(n))
+       
         run_aborted=False
         k = key_listner()
         k.start()

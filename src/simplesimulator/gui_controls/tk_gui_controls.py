@@ -6,7 +6,7 @@ from .gui_obj import GUI_OBJ
 
 import logging
 logger=logging.getLogger(__name__)
-
+import os
 """
 
 **** IMPORTANT ****
@@ -18,8 +18,15 @@ limit the import scope of Tk
 
 """
 
+DEFAULT_SLIDER_WIDTH=350
+MIN_HEIGHT=200
+MIN_WIDTH=DEFAULT_SLIDER_WIDTH
+
+
+
 def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
     import tkinter as tk
+    logger.debug("Gui_process_funct [PID={}]".format(os.getpid()))
     
     class GUI_CNTRL():
         def __init__(self,sdv):
@@ -126,7 +133,7 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
                 to=self.max,
                 tickinterval=self.ticks,
                 variable=self._value,
-                length=300,
+                length=DEFAULT_SLIDER_WIDTH,
                 orient=tk.HORIZONTAL,
                 resolution=self.resolution,
                 command=self.callback
@@ -157,7 +164,8 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
         def process_function(self,cntrl_obj_list:list[GUI_OBJ]):
 
             self.root = tk.Tk()
-            self.root.title("Simple Simulator Controls")
+            self.root.minsize(MIN_HEIGHT, MIN_WIDTH)
+            self.root.title("Simple Simulator Controls  [PID={}]".format(os.getpid()))
             self.root.protocol("WM_DELETE_WINDOW", self.__close_window)
             for o in cntrl_obj_list:
                 cntrl_inst=GUI_CNTRL.factory(o)
@@ -169,7 +177,7 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
             self.root.mainloop()
     
 
-            logger.debug("Simple Simulator Controls window finished")
+            logger.debug("Simple Simulator Controls window finished [PID={}]".format(os.getpid()))
 
 
     p=TK_GUI_PROCESS(que)
