@@ -2,12 +2,12 @@
 
 import matplotlib.pyplot as plt
 import logging
-from simplesimulator.key_listner import key_listner
+from simplesimulator.misc.key_listener import key_listner
 from simplesimulator.custom_exceptions import *
-import simplesimulator.function_timer as function_timer
+import simplesimulator.misc.function_timer as function_timer
 import simplesimulator.blocks  as blocks
-import simplesimulator.gui as gui
-
+import simplesimulator.gui_controls.gui as gui
+import simplesimulator.gui_controls as gui_controls
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 logger = logging.getLogger(__name__)
@@ -104,9 +104,9 @@ class Model():
                     logger.debug("found display block :{}".format(b.name))
                     model_has_dispaly = True
 
-                if isinstance(b, blocks.gui_controls.GUI_BLOCK):
+                if isinstance(b, blocks.gui_blocks.GUI_BLOCK):
                     logger.debug("found gui block :{}".format(b.name))
-                    gui_blocks.append(b.gui_obj)
+                    gui_blocks.append(b)
 
 
 
@@ -135,7 +135,7 @@ class Model():
         k.start()
 
         if self.gui_interface:
-            self.gui_interface.start()
+            self.gui_interface.start(gui_controls.tk_gui_controls.Gui_process_funct)
 
         for i in range(n):
             update_plots=False

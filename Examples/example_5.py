@@ -1,14 +1,4 @@
 import sys
-
-DEVEL=True
-
-if DEVEL:
-    local_path="./src/"
-    if local_path not in sys.path:
-        sys.path.append(local_path)
-
-
-import simplesimulator
 from simplesimulator import runtime,blocks,custom_exceptions
 import logging
 import numpy as np
@@ -23,22 +13,21 @@ logger=logging.getLogger(__name__)
 
 
 if __name__=="__main__":
-
     model=runtime.Model(time_step=1e-3)
     model.create_plot(1,2,title="Simple Mixer")
-    sine_1=blocks.sources.sine_generator(freq=300,amplitude=1,phase=0.5)
-    sine_2=blocks.sources.sine_generator(freq=300,amplitude=1)
+    sine_1=blocks.sources.sine_generator(freq=100,amplitude=1,phase=0.5)
+    sine_2=blocks.sources.sine_generator(freq=100,amplitude=1)
     noise_1=blocks.sources.Noise_generator(amplitude=0.01)
-    slider_freq=blocks.gui_controls.Gui_slider(min=250,max=350,name="Frequency",steps=1000)
-    slider_phase=blocks.gui_controls.Gui_slider(min=0,max=np.pi*2,name="Phase")
-    slider_noise=blocks.gui_controls.Gui_slider(min=0,max=2,name="Noise")
+    slider_freq=blocks.gui_blocks.Gui_slider(min=50,max=150,name="Frequency",steps=1000)
+    slider_phase=blocks.gui_blocks.Gui_slider(min=0,max=np.pi*2,name="Phase")
+    slider_noise=blocks.gui_blocks.Gui_slider(min=0,max=2,name="Noise")
     buff = blocks.functions.Buffer(sz=600)
     sum = blocks.functions.Sum()
     mul = blocks.functions.Multiplier()
     fft=blocks.dsp.FFT()
     fft_d = blocks.dsp.FFT_DISPLAY()
     window=blocks.dsp.WINDOW()
-    filter=blocks.dsp.FILTER_CHEB_LP(wn=0.15)
+    filter=blocks.dsp.FILTER_CHEB_LP(wn=0.05,N=4)
    
     p1=blocks.display.Plot_Wndw(ax=model.axes[0],ylim=(-2,2))
     p2=blocks.display.Plot_Wndw(ax=model.axes[1],ylim=(-100,0),xlim=(0,600))

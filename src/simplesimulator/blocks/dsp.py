@@ -201,12 +201,19 @@ class FFT_DISPLAY(DSP):
 class FILTER_CHEB_LP(DSP):
     
     def __init__(self,**kwargs):
+        """
+        params:
+        - N = Filter order , default=3
+        - rp = ripple , default=0.1
+        - wp = cut off , default=0.2
+        
+        """
         name=kwargs.get("name",FILTER_CHEB_LP.__name__)
         super().__init__(n_max=1,block_class=FILTER_CHEB_LP.__name__,name=name)
         self.data_obj=None
         self._n=kwargs.get("N",3)
         self._rp=kwargs.get("rp",0.1)
-        self._wn=kwargs.get("wn",0.1)
+        self._wn=kwargs.get("wn",0.2)
         
 
     def initialise(self):
