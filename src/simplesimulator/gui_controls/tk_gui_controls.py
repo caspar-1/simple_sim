@@ -25,17 +25,25 @@ MIN_WIDTH=DEFAULT_SLIDER_WIDTH
 
 
 def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
-    import tkinter as tk
     logger.debug("Gui_process_funct [PID={}]".format(os.getpid()))
+    import tkinter as tk
+    logger.debug("tkinter imported")
+    
     
     class GUI_CNTRL():
         def __init__(self,sdv):
             self._value =None
             self.shared_data_value_obj=sdv
+            self.label="?"
 
         def callback(self):
             v=self._value.get()
-            self.shared_data_value_obj.value=v
+            self.set_shared_value(v)
+
+        def set_shared_value(self,v):
+            #logger.debug("Cntrl:{} = {}".format(self.label,v))
+            if self.shared_data_value_obj:
+                self.shared_data_value_obj.value=v
 
 
         @staticmethod
@@ -53,7 +61,7 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
             super().__init__(sdv)
             self.label=kwargs.get("label","checkbox")
             self.initial=kwargs.get("initial",0)
-            self.shared_data_value_obj.value=self.initial
+            self.set_shared_value(self.initial)
 
         def add_cntrl(self,root):
             self._value=tk.IntVar()
@@ -64,9 +72,6 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
             _cntrl.pack(anchor=tk.W)
             
 
-        @property
-        def value(self):
-            return int(self.shared_data_value_obj.value)
 
 
     class tk_RadioGroup(GUI_CNTRL):
@@ -86,7 +91,7 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
             self.initial=kwargs.get("initial",1)
             self.cntrls=[]
             self.idx=1
-            self.shared_data_value_obj.value=self.initial
+            self.set_shared_value(self.initial)
             for s in sub_controls:
                 self.cntrls.append(tk_RadioGroup.tk_RadioButton(label=s))
 
@@ -101,23 +106,22 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
             
             self._value.set(self.initial)
 
-        @property
-        def value(self):
-            return int(self.shared_data_value_obj.value)
+
 
 
     class tk_Slider(GUI_CNTRL):
         def __init__(self,sdv:multiprocessing.Value,sub_controls,**kwargs):
             super().__init__(sdv)
+            self.label=kwargs.get("label","slider")
             self.min=kwargs.get("min",0.0)
             self.max=kwargs.get("max",1.0)
             self.initial=kwargs.get("initial",self.min)
             self.steps=kwargs.get("steps",100)
             self.ticks=kwargs.get("ticks",(self.max-self.min)/2)
-            self.label=kwargs.get("label",None)
-            self.resolution=abs((self.max-self.min)/self.steps)
             
-            self.shared_data_value_obj.value=self.initial
+            self.resolution=abs((self.max-self.min)/self.steps)
+            self.set_shared_value(self.initial)
+            
 
         def callback(self,v):
             super().callback()
@@ -162,18 +166,22 @@ def Gui_process_funct(que:multiprocessing.Queue,cntrls:list[GUI_OBJ]):
                     pass
 
         def process_function(self,cntrl_obj_list:list[GUI_OBJ]):
-
+            logging.debug("process_function")
             self.root = tk.Tk()
             self.root.minsize(MIN_HEIGHT, MIN_WIDTH)
             self.root.title("Simple Simulator Controls  [PID={}]".format(os.getpid()))
             self.root.protocol("WM_DELETE_WINDOW", self.__close_window)
+            logging.debug("initialise controls..")
             for o in cntrl_obj_list:
+                logger.debug("added:".format(o.id))
                 cntrl_inst=GUI_CNTRL.factory(o)
                 if cntrl_inst:
                     cntrl_inst.add_cntrl(self.root)
+                
 
             self.root.after_idle(self.periodic_call)
             self.que.put("running")
+            logging.debug("starting tk main loop...")
             self.root.mainloop()
     
 

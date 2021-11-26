@@ -14,6 +14,7 @@ setup(
     install_requires=[
         'pynput',
         'numpy',
+        'scipy',
         'matplotlib'
         ],
 
