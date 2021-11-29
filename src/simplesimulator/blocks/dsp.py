@@ -30,10 +30,6 @@ class RATE_CHANGE(DSP):
             self.convert_fn=self._convert_down
         self.count=0
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-
     def _convert_up(self,data_avilible,data):
         if(data_avilible):
             self.data_obj.data=data
@@ -61,23 +57,26 @@ class RATE_CHANGE(DSP):
         return False
 
 class WINDOW(DSP):
+    window_dict={"bartlett":np.bartlett,"blackman":np.blackman,"hamming":np.hamming,"hanning":np.hanning}
+
     
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",WINDOW.__name__)
-        super().__init__(n_max=1,block_class=WINDOW.__name__,name=name)
+    def __init__(self,name=None,window="hamming",inverse=False):
+        class_name = self.__class__.__name__
+        name=name if name else class_name
+        self.is_inverse=inverse
+        super().__init__(n_max=1,block_class=class_name,name=name)
         self.data_obj=None
         self.window=None
-        self.window_fnct=np.hamming
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
+        self.window_fnct=WINDOW.window_dict.get(window,np.hamming)
 
     def run(self,ts):
         if self.data_availible():  
             data_in=self.block_sources[0].out_data_obj.data
             if self.window is None:
-                self.window=self.window_fnct(len(data_in))
+                if self.is_inverse:
+                    self.window=1.0/self.window_fnct(len(data_in))
+                else:
+                    self.window=self.window_fnct(len(data_in))
 
             windowed_data=data_in*self.window
 
@@ -100,10 +99,6 @@ class FFT(DSP):
         self.data_obj=None
         self._norm=kwargs.get("normalise",False)
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-    
     def run(self,ts):    
         
         if self.data_availible():
@@ -133,11 +128,6 @@ class IFFT(DSP):
         super().__init__(n_max=1,block_class=IFFT.__name__,name=name)
         self.data_obj=None
 
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-    
     def run(self,ts):    
         
         if self.data_availible():
@@ -216,8 +206,9 @@ class FILTER_CHEB_LP(DSP):
         self._wn=kwargs.get("wn",0.2)
         
 
-    def initialise(self):
+    def initialise(self,model_obj):
         logger.debug("initialise {}".format(self.name))
+        super().initialise(model_obj)
         self.sos=signal.cheby1(N=self._n,rp=self._rp,Wn=[self._wn],btype="low",output="sos")
     
     def run(self,ts):    

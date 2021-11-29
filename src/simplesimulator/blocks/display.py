@@ -32,9 +32,7 @@ class Line_plot(Display):
         self.line=None
         self.plt_args={}
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
+
 
     def run(self, ts):
 
@@ -69,10 +67,7 @@ class Plot_Wndw(Display):
         self.ylim=kwargs.get("ylim",(-1,1))
         self.xlim=kwargs.get("xlim",(0,0.5))
         self.plt_args = dict()
-        self.initialise()
-
-
-    def initialise(self):
+        
         if self.ax is None:
             self.fig = plt.figure()
             self.ax = self.fig.add_subplot(111)

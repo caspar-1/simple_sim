@@ -9,3 +9,6 @@ class Block_exception_add_input_fail(Exception):
 
 class Block_exception_invalid_data_type(Exception):
     pass
+
+class Block_exception_invalid_input_data(Exception):
+    pass

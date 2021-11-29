@@ -21,7 +21,7 @@ if __name__=="__main__":
     slider_freq=blocks.gui_blocks.Gui_slider(min=10e6,max=25e6,label="Frequency_slider",steps=1000)
     slider_phase=blocks.gui_blocks.Gui_slider(min=0,max=np.pi*2,label="Phase_slider")
     slider_noise=blocks.gui_blocks.Gui_slider(min=0,max=2,label="Noise_slider")
-    buff = blocks.functions.Buffer(sz=600)
+    buff = blocks.buffers.Buffer(sz=600)
     sum = blocks.functions.Sum()
     mul = blocks.functions.Multiplier()
     fft=blocks.dsp.FFT()

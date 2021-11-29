@@ -22,7 +22,8 @@ class OFDM(MODULATION):
         self.pilotValue=3+3j
         self.data_obj=None
   
-    def initialise(self):
+    def initialise(self,model_obj):
+        super().initialise(model_obj)
         logger.debug("initialise {}".format(self.name))
         self.allCarriers=np.arange(self.n_sub_carriers)
         self.pilotCarriers=self.allCarriers[::self.n_sub_carriers//self.n_pilot_carriers]

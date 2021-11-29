@@ -20,8 +20,8 @@ if __name__=="__main__":
     sum=blocks.functions.Sum()
    
     absolute=blocks.functions.ABS(name="TEST_ABS")
-    buff_1=blocks.functions.Buffer(sz=2048)
-    buff_2=blocks.functions.Buffer(sz=512)
+    buff_1=blocks.buffers.Buffer(sz=2048)
+    buff_2=blocks.buffers.Buffer(sz=512)
     ep=blocks.loads.end_point()
     fft=blocks.dsp.FFT(normalise=False)
     fft_d=blocks.dsp.FFT_DISPLAY()

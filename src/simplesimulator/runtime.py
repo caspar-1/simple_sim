@@ -18,11 +18,11 @@ class AbortException(Exception):
     pass
 
 class Model():
-    def __init__(self,**kwargs):
+    def __init__(self,time_step=1e-3,**kwargs):
         logger.debug("Initialising Runtime Model [Process PID={}]".format(os.getpid()))
         
         self.time = 0.0
-        self.ts = kwargs.get("time_step",1e-3)
+        self.ts = time_step
         self.registered_blocks = []
         self.runtime_blocks = []
         self.gui_interface=None
@@ -120,7 +120,7 @@ class Model():
                 self.gui_interface=gui.GUI(gui_blocks)
 
             for b in self.runtime_blocks:
-                b.initialise()
+                b.initialise(self)
 
         except Model_runtime_exception as e:
             logger.error(e)

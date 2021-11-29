@@ -24,8 +24,8 @@ if __name__=="__main__":
     p2=blocks.display.Plot_Wndw(ax=model.axes[1],ylim=(-2,2))
     l1 = p1.get_line_plot(fmt="g")
     l2 = p2.get_line_plot(fmt="r")
-    buff_1=blocks.functions.Buffer(sz=500)
-    buff_2=blocks.functions.Buffer(sz=500)
+    buff_1=blocks.buffers.Buffer(sz=500)
+    buff_2=blocks.buffers.Buffer(sz=500)
 
 
     model.add_block(sine_1)

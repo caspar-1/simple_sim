@@ -1,24 +1,18 @@
 import logging
 import numpy as np
 from . import exceptions as excpt
-from .block import Block
+from .block import Block,Input,NamedInput
 from . import data as data
 
 logger=logging.getLogger(__name__)
 
+class Function_multi_input(Block):
 
-
-
-class Sum(Block):
-
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",Sum.__name__)
-        super().__init__(n_max=-1,block_class=Sum.__name__,name=name)
+    def __init__(self,name=None):
+        cls=self.__class__.__name__
+        name=name if name else cls
+        super().__init__(n_max=-1,block_class=cls,name=name)
         self.data_obj=data.STREAM_DATA()
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass        
 
     def run(self,ts):
         r=None
@@ -27,7 +21,8 @@ class Sum(Block):
                 if r is None:
                     r=i.out_data_obj.data
                 else:
-                    r=r+i.out_data_obj.data
+                    r=self.func(ts,r,i.out_data_obj.data)
+
             self.data_obj.data=r
             self.out_data_valid=True
         else:
@@ -35,143 +30,131 @@ class Sum(Block):
 
         return False
 
-class Sub(Block):
+
+
+
+class Function_one_input(Block):
+    def __init__(self,name=None):
+        cls=self.__class__.__name__
+        name=name if name else cls
+        super().__init__(n_max=1,block_class=cls,name=name)
+        self.data_obj=data.STREAM_DATA()
+
+    def run(self,ts):
+        if self.data_availible():
+            data_obj=self.block_sources[0].out_data_obj
+            self.data_obj.data=self.func(ts,data_obj.data)                      
+            self.out_data_valid=True
+        else:
+            self.out_data_valid=False
+           
+        
+        return False
+
+
+class Sum(Function_multi_input):
+
+    def func(self,ts,r,l):
+        return r+l
+
+class Sub(Function_multi_input):
     
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",Sub.__name__)
-        super().__init__(n_max=2,block_class=Sub.__name__,name=name)
-        self.data_obj=data.STREAM_DATA()
+    def func(self,ts,r,l):
+        return r-l
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-
-
-    def run(self,ts):
-        r=None
-        if self.data_availible():
-            for i in self.block_sources:
-                if r is None:
-                    r=i.out_data_obj.data
-                else:
-                    r=r-i.out_data_obj.data
-
-            self.data_obj.data=r
-            self.out_data_valid=True
-        else:
-            self.out_data_valid=False
-
-        return False
-
-
-class Multiplier(Block):
+class Multiplier(Function_multi_input):
  
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",Multiplier.__name__)
-        super().__init__(n_max=-1,block_class=Multiplier.__name__,name=name)
-        self.data_obj=data.STREAM_DATA()
+    def func(self,ts,r,l):
+        return r*l
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
+class ABS(Function_one_input):
+    
+    def func(self,ts,data):
+        return np.abs(data) 
 
-    def run(self,ts):
-        r=None
-        if self.data_availible():
-            for i in self.block_sources:
-                if r is None:
-                    r=i.out_data_obj.data
-                else:
-                    r=r*i.out_data_obj.data
+class REAL(Function_one_input):
+    
+    def func(self,ts,data):
+        return np.real(data) 
 
-            self.data_obj.data=r
-            self.out_data_valid=True
-        else:
-            self.out_data_valid=False
+class IMAG(Function_one_input):
+    
+    def func(self,ts,data):
+        return np.imag(data)       
 
-        return False
-
-    def get_out_data_type(self):
-        pass
+class Recipricol(Function_one_input):
+    
+    def func(self,ts,data):
+        return (1.0/data)       
 
 
-class ABS(Block):
+class Integrate(Function_one_input):
     
     def __init__(self,**kwargs):
-        name=kwargs.get("name",ABS.__name__)
-        super().__init__(n_max=1,block_class=ABS.__name__,name=name)
-        self.data_obj=data.STREAM_DATA()
+        super().__init__(**kwargs)
+        self.integral=0.0
+        self.gain=kwargs.get("gain",1.0)
+        self.sat_max=kwargs.get("smax",np.finfo.max)
+        self.sat_min=kwargs.get("smin",-np.finfo.max)
+    
+    def func(self,ts,data):
+        self.integral+=data*self.gain
+        self.integral=self.integral if self.integral<self.sat_max else self.sat_max
+        self.integral=self.integral if self.integral>self.sat_min else self.sat_min
+        return (self.integral)     
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
 
-    def run(self,ts):
-        if self.data_availible():
-            data_obj=self.block_sources[0].out_data_obj
-            self.data_obj.data=np.abs(data_obj.data)                      
-            self.out_data_valid=True
-        else:
-            self.out_data_valid=False
-           
+class Differentiate(Function_one_input):
+    
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.z=0.0
+        self.gain=kwargs.get("gain",1.0)
+        self.sat_max=kwargs.get("smax",np.finfo.max)
+        self.sat_min=kwargs.get("smin",-np.finfo.max)
+    
+    def func(self,ts,data):
+        diff=data-self.z
+        self.z=data
         
-        return False
+        diff=diff if diff<self.sat_max else self.sat_max
+        diff=diff if diff>self.sat_min else self.sat_min
+        return (diff)       
+          
+         
+class Switch(Block):
 
-
-class REAL(Block):
-    
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",REAL.__name__)
-        super().__init__(n_max=1,block_class=REAL.__name__,name=name)
+    def __init__(self,name:str=None,select:int=1):
+        cls=self.__class__.__name__
+        name=name if name else cls
+        super().__init__(n_max=-1,block_class=cls,name=name)
         self.data_obj=data.STREAM_DATA()
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
+        self.select_input = NamedInput("select", select)
 
     def run(self,ts):
-        if self.data_availible():
-            data_obj=self.block_sources[0].out_data_obj
-            self.data_obj.data=np.real(data_obj.data)                      
-            self.out_data_valid=True
-        else:
-            self.out_data_valid=False
-           
-        
-        return False
-
-
-
-
-
-class Buffer(Block):
-    
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",Buffer.__name__)
-        self.buffer_sz=kwargs.get("sz",1)
-        super().__init__(n_max=1,block_class=Buffer.__name__,name=name)
-        self.data_obj=data.ARRAY_DATA(self.buffer_sz)
-        self.data_count=0
-        self.data_ready=False
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-
-    def run(self,ts):
+        _select = int(self.select_input.get())-1
         self.out_data_valid=False
-        if self.data_availible():
-            data_obj=self.block_sources[0].out_data_obj
-            self.data_obj.data[self.data_count]=data_obj.data
-            self.data_count+=1
-            if self.data_count==self.buffer_sz:
-                self.data_count=0
+        if _select<len(self.block_sources):
+            source=self.block_sources[_select]
+            if source.out_data_valid:
+                r=source.out_data_obj.data
+                self.data_obj.data=r
                 self.out_data_valid=True
-            else:
-                pass
-        else:
-            pass
-       
-            
-            
+          
+                
+
         return False
+
+class Quantize(Function_one_input):
+    
+    def __init__(self,bits=12,vref=1,**kwargs):
+        super().__init__(**kwargs)
+        
+        self.fsd=2**(bits-1)
+        self.vref=vref
+    
+    def func(self,ts,data):
+        d=int((data/self.vref)*self.fsd)
+        d=d if d<self.fsd else self.fsd
+        d=d if d>-self.fsd else -self.fsd
+        return (d)     

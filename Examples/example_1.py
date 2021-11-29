@@ -1,5 +1,6 @@
 import sys
 from simplesimulator import runtime, blocks, custom_exceptions
+
 import logging
 
 
@@ -23,9 +24,11 @@ if __name__ == "__main__":
     sine_6 = blocks.sources.sine_generator(freq=150, amplitude=1.0)
     noise = blocks.sources.Noise_generator(amplitude=0.01)
     sum = blocks.functions.Sum()
-    mul = blocks.functions.Multiplier()
+   
+    recipricol = blocks.functions.Recipricol()
+    
     absolute = blocks.functions.ABS(name="TEST_ABS")
-    buff = blocks.functions.Buffer(sz=2048)
+    buff = blocks.buffers.Buffer(sz=2048)
     ep = blocks.loads.end_point()
     fft = blocks.dsp.FFT()
     fft_d = blocks.dsp.FFT_DISPLAY()
@@ -35,14 +38,15 @@ if __name__ == "__main__":
     p3 = blocks.display.Plot_Wndw(ax=model.axes[1, 0],title="FFT",ylim=(-80,10))
     p4 = blocks.display.Plot_Wndw(ax=model.axes[1, 1],title="IFFT",ylim=(-10,10))
     window=blocks.dsp.WINDOW()
-    real = blocks.functions.REAL(name="REAL")
+    i_window=blocks.dsp.WINDOW(inverse=True)
+    
 
     l1 = p1.get_line_plot(fmt="r--")
     l2 = p2.get_line_plot(fmt="g")
     l3 = p3.get_line_plot(fmt="b")
     l4 = p4.get_line_plot(fmt="b")
 
-    f = blocks.loads.File_out("test.json")
+    f = blocks.loads.File_out(filename="test.json")
 
     model.add_block(sine_1)
     model.add_block(sine_2)
@@ -56,17 +60,17 @@ if __name__ == "__main__":
     model.add_block(fft)
     model.add_block(ifft)
     model.add_block(window)
+    model.add_block(i_window)
     model.add_block(absolute)
-    model.add_block(real)
-
+    model.add_block(recipricol)
+    model.add_block(recipricol)
     model.add_block(l1)
     model.add_block(l2)
     model.add_block(l3)
     model.add_block(l4)
-
     model.add_block(f)
     model.add_block(fft_d)
-
+    
     model.link_block(sine_1, sum)
     model.link_block(sine_2, sum)
     model.link_block(sine_3, sum)
@@ -79,17 +83,11 @@ if __name__ == "__main__":
     model.link_block(window, fft)
     model.link_block(fft, fft_d)
     model.link_block(fft, ifft)
-    model.link_block(ifft, real)
-
-    
-    #model.link_block(fft_d, f)
-
+    model.link_block(ifft, i_window)
     model.link_block(buff, l1)
     model.link_block(window, l2)
     model.link_block(fft_d, l3)
-    model.link_block(real, l4)
-    #model.link_block(fft_d, l2)
-    #model.link_block(ifft, l3)
+    model.link_block(i_window, l4)
 
     try:
         model.init()

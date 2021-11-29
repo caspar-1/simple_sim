@@ -11,14 +11,10 @@ logger=logging.getLogger(__name__)
 
 class end_point(Block):
     
-    def __init__(self,**kwargs):
-        name=kwargs.get("name",end_point.__name__)
-        super().__init__(n_max=1,block_class=end_point.__name__,name=name)
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
-
+    def __init__(self,name=None):
+        class_name = self.__class__.__name__
+        name=name if name else class_name
+        super().__init__(n_max=1,block_class=class_name,name=name)
 
     def run(self,ts):
         data=self.block_sources[0].out_data
@@ -31,31 +27,26 @@ class end_point(Block):
 
 class File_out(Block):
     
-
     class NumpyEncoder(json.JSONEncoder):
         def default(self, obj):
             if isinstance(obj, np.ndarray):
                 return obj.tolist()
             return json.JSONEncoder.default(self, obj)
 
-    def __init__(self,filename,**kwargs):
-        name=kwargs.get("name",File_out.__name__)
-        super().__init__(n_max=1,block_class=File_out.__name__,name=name)
+    def __init__(self,filename,name=None,max_records=10):
+        class_name = self.__class__.__name__
+        name=name if name else class_name
+        super().__init__(n_max=1,block_class=class_name,name=name)
         self.filename=filename
         self.buff=[]
-        self.max_buff_records=kwargs.get("max_records",10)
+        self.max_buff_records=max_records
         self.max_buff_records_count=self.max_buff_records
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
 
     def flush(self):
         with open (self.filename,"w+") as fh:
             for l in self.buff:
                 js=json.dumps(l,cls=File_out.NumpyEncoder)
                 fh.write(js)
-    
     
     def run(self,ts):
         if self.data_availible():

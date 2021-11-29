@@ -55,10 +55,6 @@ class Gui_RadioGroup(GUI_BLOCK):
         def add_button(self,label):
             self.sub_controls.append(label)
 
-        def initialise(self):
-            logger.debug("initialise {}".format(self.name))
-            pass
-
         def run(self,ts):
             self.data_obj.set_data(self.value)
             self.out_data_valid=True
@@ -74,10 +70,6 @@ class Gui_checkbox(GUI_BLOCK):
         name=kwargs.get("name",Gui_slider.__name__)
         super().__init__(n_max=0,block_class=Gui_slider.__name__,defined_name=name,**kwargs)
         self.data_obj=data.STREAM_DATA()
-
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
 
     def run(self,ts):
         self.data_obj.set_data(self.value)
@@ -96,9 +88,6 @@ class Gui_slider(GUI_BLOCK):
         super().__init__(n_max=0,block_class=Gui_slider.__name__,defined_name=name,**kwargs)
         self.data_obj=data.STREAM_DATA()
 
-    def initialise(self):
-        logger.debug("initialise {}".format(self.name))
-        pass
 
     def run(self,ts):
         self.data_obj.set_data(self.value)

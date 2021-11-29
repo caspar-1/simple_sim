@@ -71,6 +71,7 @@ class Block():
         self.name="{}_{}".format(name,Block.ID) 
         Block.ID+=1
         logger.debug("Creating Block - {}:{}".format(self.name,self.block_class))
+        self.model_obj=None
 
 
     def __del__(self):
@@ -102,7 +103,9 @@ class Block():
             data_ready&=b.out_data_valid
         return data_ready
     
-    def initialise(self):
+    def initialise(self,model_obj):
+        logger.debug("initialise {}".format(self.name))
+        self.model_obj=model_obj
         pass
     
     def run(self)->bool:
