@@ -3,6 +3,7 @@ import numpy as np
 from . import exceptions as excpt
 from .block import Block
 from . import data as data
+from .data import ModelState, RunResult
 
 logger=logging.getLogger(__name__)
 
@@ -30,9 +31,11 @@ class Buffer(Block):
 
 
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         self.out_data_valid=False
+        did_run=False
         if self.data_availible():
+            did_run=True
             data_obj=self.block_sources[0].out_data_obj
             self.data_obj.data[self.data_count]=data_obj.data
             self.data_count+=1
@@ -44,7 +47,7 @@ class Buffer(Block):
         else:
             pass
        
-        return False
+        return RunResult(update_display=False,did_run=did_run)
 
 
 
@@ -69,13 +72,16 @@ class ROLL(Block):
         self.data_ready=False
 
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         self.out_data_valid=True
+        did_run=False
         if self.data_availible():
+            did_run=True
             data_obj=self.block_sources[0].out_data_obj
             self.data_obj.data=np.roll(self.data_obj.data,1)
             self.data_obj.data[0]=data_obj.data
+            
         else:
             pass
        
-        return False
+        return RunResult(update_display=False,did_run=did_run)

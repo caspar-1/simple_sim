@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from . import exceptions as excpt
 from .block import Block
 from .data import DATA_TYPES
+from .data import ModelState ,RunResult
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class Line_plot(Display):
 
 
 
-    def run(self, ts):
+    def run(self, ms:ModelState )->RunResult:
 
         def __run(data):
             try:
@@ -50,8 +52,8 @@ class Line_plot(Display):
             data_obj = self.block_sources[0].out_data_obj
             if data_obj is not None:
                 __run(data_obj.data)
-                return True
-        return False
+                return RunResult(True,True)
+        return RunResult(False,False)
 
 
 class Plot_Wndw(Display):

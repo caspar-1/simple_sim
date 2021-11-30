@@ -17,8 +17,8 @@ if __name__=="__main__":
     model.create_plot(1,2,title="test 1")
     source_1=blocks.sources.Random_Digital_generator(nbits=128)
     
-    p1=blocks.display.Plot_Wndw(model.axes[0],fmt="g",drawstyle="steps",title="BitStream")
-    p2=blocks.display.Plot_Wndw(model.axes[1])
+    p1=blocks.display.Plot_Wndw(model.axes[0],fmt="g",drawstyle="steps",title="BitStream",ylim=(0,1.5))
+    p2=blocks.display.Plot_Wndw(model.axes[1],ylim=(0,1.5))
     l1 = p1.get_line_plot(fmt="b")
     l2 = p2.get_line_plot(fmt="b")
 

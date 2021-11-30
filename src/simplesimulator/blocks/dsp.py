@@ -4,7 +4,7 @@ import scipy.signal as signal
 from . import exceptions as excpt
 from .block import Block,Input,NamedInput
 from . import data as data
-
+from .data import ModelState ,RunResult
 
 
 logger=logging.getLogger(__name__)
@@ -49,12 +49,12 @@ class RATE_CHANGE(DSP):
 
 
 
-    def run(self,ts):
+    def run(self,ms:ModelState )->RunResult:
         data_availible=self.data_availible()   
         data_obj=self.block_sources[0].out_data_obj
         self.out_data_valid=self.convert_fn(data_availible,data_obj.data)
         
-        return False
+        return RunResult(False,self.out_data_valid)
 
 class WINDOW(DSP):
     window_dict={"bartlett":np.bartlett,"blackman":np.blackman,"hamming":np.hamming,"hanning":np.hanning}
@@ -69,7 +69,7 @@ class WINDOW(DSP):
         self.window=None
         self.window_fnct=WINDOW.window_dict.get(window,np.hamming)
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         if self.data_availible():  
             data_in=self.block_sources[0].out_data_obj.data
             if self.window is None:
@@ -89,25 +89,29 @@ class WINDOW(DSP):
         else:
             self.out_data_valid=False
         
-        return False
+        return RunResult(False,self.out_data_valid)
 
 class FFT(DSP):
     
-    def __init__(self,**kwargs):
+    def __init__(self,normalise=False,**kwargs):
         name=kwargs.get("name",FFT.__name__)
         super().__init__(n_max=1,block_class=FFT.__name__,name=name)
         self.data_obj=None
-        self._norm=kwargs.get("normalise",False)
+        self._norm=normalise
 
-    def run(self,ts):    
+    def run(self,ms:ModelState)->RunResult:    
         
         if self.data_availible():
             data_obj=self.block_sources[0].out_data_obj
-            _fft=np.fft.fft(data_obj.data)
-
+            _data=data_obj.data
+            
             if self._norm:
-                sz=(_fft.shape[0])
-                _fft=_fft/sz
+                _max=(np.max(_data))
+                _data=_data/_max
+
+
+            data_obj=self.block_sources[0].out_data_obj
+            _fft=np.fft.fft(_data)
 
 
             if(self.data_obj is None):
@@ -118,7 +122,7 @@ class FFT(DSP):
         else:
             self.out_data_valid=False
    
-        return False
+        return RunResult(False,self.out_data_valid)
 
 
 class IFFT(DSP):
@@ -128,7 +132,7 @@ class IFFT(DSP):
         super().__init__(n_max=1,block_class=IFFT.__name__,name=name)
         self.data_obj=None
 
-    def run(self,ts):    
+    def run(self,ms:ModelState)->RunResult:    
         
         if self.data_availible():
             data_obj=self.block_sources[0].out_data_obj
@@ -142,7 +146,7 @@ class IFFT(DSP):
         else:
             self.out_data_valid=False
    
-        return False
+        return RunResult(False,self.out_data_valid)
 
 class FFT_DISPLAY(DSP):
     def __init__(self,**kwargs):
@@ -154,7 +158,7 @@ class FFT_DISPLAY(DSP):
         self._log=kwargs.get("log",True)
 
         
-    def run(self,ts):    
+    def run(self,ms:ModelState)->RunResult:    
 
         
         if self.data_availible():
@@ -185,7 +189,7 @@ class FFT_DISPLAY(DSP):
         else:
             self.out_data_valid=False
 
-        return False
+        return RunResult(False,self.out_data_valid)
 
 
 class FILTER_CHEB_LP(DSP):
@@ -211,7 +215,7 @@ class FILTER_CHEB_LP(DSP):
         super().initialise(model_obj)
         self.sos=signal.cheby1(N=self._n,rp=self._rp,Wn=[self._wn],btype="low",output="sos")
     
-    def run(self,ts):    
+    def run(self,ms:ModelState)->RunResult:    
         
         if self.data_availible():
             data_obj=self.block_sources[0].out_data_obj
@@ -225,4 +229,4 @@ class FILTER_CHEB_LP(DSP):
         else:
             self.out_data_valid=False
    
-        return False
+        return RunResult(False,self.out_data_valid)

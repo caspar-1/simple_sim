@@ -18,15 +18,15 @@ if __name__=="__main__":
     model=runtime.Model(time_step=ts)
     model.create_plot(3,1,title="test 1")
     times=np.array([0,5,7,15,20])*0.0001
-    amplitudes=[1,0,1,-1,1]
+    amplitudes=[1,0,1,-1,0]
     freq=100
-    bits=12
+    bits=14
 
     scale=2**(bits-1)
 
     #gui controls
     slider_freq=blocks.gui_blocks.Gui_slider(min=100,max=12500,name="Frequency",label="freq",steps=1000)
-    rg=blocks.gui_blocks.Gui_RadioGroup(label="source selection",initial=1)
+    rg=blocks.gui_blocks.Gui_RadioGroup(label="source selection",initial=4)
     rg.add_button("sine")
     rg.add_button("square")
     rg.add_button("triangle")
@@ -38,28 +38,25 @@ if __name__=="__main__":
     source_sin=blocks.sources.sine_generator(freq=freq,offset=0.0,amplitude=1.0)
     source_square=blocks.sources.square_generator(freq=freq,offset=0.0,amplitude=1.0)
     source_triangle=blocks.sources.triangle_generator(freq=freq,offset=0.0,amplitude=1.0,symetry=0.5)
-    source_list=blocks.sources.List_Gen(name="list gen",times=times,amplitudes=amplitudes)
+    source_list=blocks.sources.List_Gen(name="list gen",times=times,amplitudes=amplitudes,repeat=-1)
 
     buff_1=blocks.buffers.ROLL(sz=display_sz)
     buff_2=blocks.buffers.Buffer(sz=2048)
    
     p1=blocks.display.Plot_Wndw(model.axes[0],fmt="g",ylim=(-scale,scale),xlim=(0,display_sz*ts))
     p2=blocks.display.Plot_Wndw(model.axes[1],fmt="g",ylim=(-scale,scale),xlim=(0,display_sz*ts))
-    p3=blocks.display.Plot_Wndw(model.axes[2],fmt="g",ylim=(-80,20),)
-    switch=blocks.functions.Switch()
+    p3=blocks.display.Plot_Wndw(model.axes[2],fmt="g",ylim=(-150,20),)
+    switch=blocks.functions.Switch(select=1)
 
     l1 = p1.get_line_plot(fmt="r")
     l2 = p2.get_line_plot(fmt="b")
     l3 = p3.get_line_plot(fmt="g")
 
     window=blocks.dsp.WINDOW(window="blackman")
-    fft=blocks.dsp.FFT()
+    fft=blocks.dsp.FFT(normalise=True)
     fft_format=blocks.dsp.FFT_DISPLAY()
     quantize=blocks.functions.Quantize(bits=bits,vref=1)
 
-
-
-    
     model.add_block(source_sin)
     model.add_block(source_square)
     model.add_block(source_triangle)
@@ -94,15 +91,11 @@ if __name__=="__main__":
     model.link_block(buff_2,window)
     model.link_block(window,fft)
     
-    
-    
     model.link_block(buff_1,l1)
     model.link_block(window,l2)
     
     model.link_block(fft,fft_format)
     model.link_block(fft_format,l3)
-
-
 
     try:
         model.init()

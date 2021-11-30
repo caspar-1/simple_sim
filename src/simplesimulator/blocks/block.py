@@ -1,6 +1,6 @@
 import logging
 from . import exceptions as excpt
-
+from simplesimulator.blocks.data import ModelState, RunResult
 
 logger=logging.getLogger(__name__)
 
@@ -49,16 +49,22 @@ class NamedInput():
 
 
 
+class Output():
+    def __init__(self,owner):
+        self.owner = owner
+        self.name=None
+        self.data_valid=False
 
+    def get(self):
+        pass
 
-
-
-
+    def update(self,data):
+        self.out_data_obj=data
 
 
 class Block():
     ID=0
-    def __init__(self,n_max,block_class,name):
+    def __init__(self,n_max:int,block_class,name:str):
         self.block_sources=[]
         self.block_loads=[]
         self.block_output=None
@@ -72,12 +78,17 @@ class Block():
         Block.ID+=1
         logger.debug("Creating Block - {}:{}".format(self.name,self.block_class))
         self.model_obj=None
+        self.output_data_connectors=[Output(self)]
+        self.input_data_connectors=[]
+        self.last_run_time=None
 
 
     def __del__(self):
         pass
 
-    def add_input(self,blk,**kwargs):
+
+
+    def add_input(self,blk:'Block'):
         if not isinstance(blk,Block):
             raise excpt.Block_exception_invalid_class
         if self.n_inputs==self.max_inputs:
@@ -97,7 +108,7 @@ class Block():
 
         return not error
     
-    def data_availible(self):
+    def data_availible(self)->bool:
         data_ready=True
         for b in self.block_sources:
             data_ready&=b.out_data_valid
@@ -107,14 +118,20 @@ class Block():
         logger.debug("initialise {}".format(self.name))
         self.model_obj=model_obj
         pass
-    
-    def run(self)->bool:
-        return False
 
-    def update_out_data(self):
+    def pre_run(self,ms:ModelState)->None:
         self.out_data_obj=self.data_obj
 
-    def get_data(self):
+    def run(self,ms:ModelState)->RunResult:
+        return RunResult()
+
+
+    def post_run(self,ms:ModelState)->None:
+        pass
+
+    
+
+    def get_output_data(self):
         return self.out_data_obj
 
     def get_out_data_type(self):
@@ -122,6 +139,56 @@ class Block():
 
     def end_simulation_clean_up(self):
         pass
+
+    def get_input_connector(self,name:str=None):
+        """### Returns the output data connector.
+        if the block has multiple output connectors the the name has to be passed, other wise the name is not required.
+
+        ### params:
+         - name : name of the connector, optional
+        """
+        data_connector=None
+        if len(self.output_data_connectors)==1:
+            data_connector=self.output_data_connectors[0]
+        else:
+            if name==None:
+                raise excpt.Block_exception_unnamed_output()
+            else:
+                for odc in self.output_data_connectors:
+                    if odc.name==name:
+                        data_connector=odc
+                        break
+        
+        return data_connector
+    
+    
+    
+    
+    
+    
+    
+    
+    def get_output_connector(self,name:str=None):
+        """### Returns the output data connector.
+        if the block has multiple output connectors the the name has to be passed, other wise the name is not required.
+
+        ### params:
+         - name : name of the connector, optional
+        """
+        data_connector=None
+        if len(self.output_data_connectors)==1:
+            data_connector=self.output_data_connectors[0]
+        else:
+            if name==None:
+                raise excpt.Block_exception_unnamed_output()
+            else:
+                for odc in self.output_data_connectors:
+                    if odc.name==name:
+                        data_connector=odc
+                        break
+        
+        return data_connector
+
 
     def __repr__(self):
         s="{}:{}".format(self.name,self.block_class)

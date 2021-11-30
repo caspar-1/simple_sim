@@ -91,3 +91,13 @@ class ARRAY_DATA(DATA):
         return _obj
         
 
+
+
+class ModelState:
+    time:float=0.0
+    delta:float=0.0
+
+class RunResult:
+    def __init__(self,update_display=False,did_run=False):
+        self.update_display=update_display
+        self.did_run=did_run

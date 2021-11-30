@@ -8,6 +8,7 @@ import simplesimulator.misc.function_timer as function_timer
 import simplesimulator.blocks  as blocks
 import simplesimulator.gui_controls.gui as gui
 import simplesimulator.gui_controls as gui_controls
+from simplesimulator.blocks.data import ModelState as ms
 import os
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -46,7 +47,7 @@ class Model():
 
         self.registered_blocks.append(blk)
 
-    def __get_block(self, obj):
+    def get_block(self, obj):
         blk = None
         if isinstance(obj, blocks.block.Block):
             name = obj.name
@@ -58,32 +59,19 @@ class Model():
                 break
         return blk
 
+    def link_named(self, source_blk,source_pin, load_blk,load_pin):
+        pass
+
     def link_block(self, source, load):
+        _src:blocks.block = self.get_block(source)
+        _load:blocks.block = self.get_block(load)
 
-        def __get(a):
-            if isinstance(a, blocks.block.Block):
-                blk = a
-                pin_name = None
-            elif isinstance(a, dict):
-                blk = a.get("name", None)
-                pin_name = a.get("pin", None)
-            elif isinstance(a, str):
-                blk = a
-                pin_name = None
-            else:
-                blk = None
-                pin_name = None
+        load_pin_name=None
+        source_pin_name=None
 
-            return blk,pin_name
-
-        source_blk,source_pin_name=__get(source)
-        load_blk,load_pin_name=__get(load)
-
-        _src = self.__get_block(source_blk)
-        _load = self.__get_block(load_blk)
         if _src and _load:
             logger.debug("""linking  o/p "{}"---->"{}{}" i/p""".format(_src.name,_load.name,"" if load_pin_name==None else ":{}".format(load_pin_name)))
-            _load.add_input(_src,pin_name=load_pin_name)
+            _load.add_input(_src)
         else:
             raise blocks.exceptions.Block_exception_add_input_fail
 
@@ -110,11 +98,6 @@ class Model():
                 if isinstance(b, blocks.gui_blocks.GUI_BLOCK):
                     logger.debug("found gui block :{}".format(b.name))
                     gui_blocks.append(b)
-
-
-
-            if model_has_dispaly == True:
-                plt.ion()
 
             if len(gui_blocks):
                 self.gui_interface=gui.GUI(gui_blocks)
@@ -152,17 +135,31 @@ class Model():
                 if not k.is_alive():
                     break
 
-                for b in self.runtime_blocks:
-                    try:
-                        b.update_out_data()
-                    except:
-                        logger.error("failed update_out_data :{}".format(b.name))
+                ms.delta=0.0
+                ms.time=self.time
+
 
                 for b in self.runtime_blocks:
                     try:
-                        update_plots|=b.run(self.time)
+                        b.pre_run(ms)
+                    except:
+                        logger.error("failed pre_run :{}".format(b.name))
+                
+
+                for b in self.runtime_blocks:
+                    try:
+                        run_result=b.run(ms)
+                        update_plots|=run_result.update_display
                     except:
                         logger.error("failed run :{}".format(b.name))
+
+                for b in self.runtime_blocks:
+                    try:
+                        b.post_run(ms)
+                    except:
+                        logger.error("failed post_run :{}".format(b.name))
+
+
 
                 if self.plot_update_count!=0:
                     self.plot_update_count-=1

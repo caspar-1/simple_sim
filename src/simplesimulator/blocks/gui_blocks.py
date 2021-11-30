@@ -2,6 +2,7 @@ from . import exceptions as excpt
 from .block import Block
 from ..gui_controls.gui_obj import GUI_OBJ
 from . import data as data
+from .data import ModelState,RunResult
 import multiprocessing
 import logging
 logger=logging.getLogger(__name__)
@@ -55,10 +56,10 @@ class Gui_RadioGroup(GUI_BLOCK):
         def add_button(self,label):
             self.sub_controls.append(label)
 
-        def run(self,ts):
+        def run(self,ms:ModelState)->RunResult:
             self.data_obj.set_data(self.value)
             self.out_data_valid=True
-            return False
+            return RunResult(False,True)
         
 
         @property
@@ -71,10 +72,10 @@ class Gui_checkbox(GUI_BLOCK):
         super().__init__(n_max=0,block_class=Gui_slider.__name__,defined_name=name,**kwargs)
         self.data_obj=data.STREAM_DATA()
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         self.data_obj.set_data(self.value)
         self.out_data_valid=True
-        return False
+        return RunResult(False,True)
 
     @property
     def value(self):
@@ -89,10 +90,10 @@ class Gui_slider(GUI_BLOCK):
         self.data_obj=data.STREAM_DATA()
 
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         self.data_obj.set_data(self.value)
         self.out_data_valid=True
-        return False
+        return RunResult(False,True)
 
     @property
     def value(self):

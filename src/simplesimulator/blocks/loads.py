@@ -4,6 +4,7 @@ import json
 from . import exceptions as excpt
 from .block import Block
 from .data import DATA_TYPES
+from .data import ModelState ,RunResult
 
 logger=logging.getLogger(__name__)
 
@@ -16,11 +17,13 @@ class end_point(Block):
         name=name if name else class_name
         super().__init__(n_max=1,block_class=class_name,name=name)
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         data=self.block_sources[0].out_data
+        did_run=False
         if data is not None:
-            print("{}:{}:{}".format(self.name,ts,data))
-        return False
+            did_run=True
+            print("{}:{}:{}".format(self.name,ms.time,data))
+        return RunResult(False,did_run)
 
 
 
@@ -48,15 +51,17 @@ class File_out(Block):
                 js=json.dumps(l,cls=File_out.NumpyEncoder)
                 fh.write(js)
     
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
+        did_run=False
         if self.data_availible():
+            did_run=True
             _data=self.block_sources[0].out_data_obj.data
             self.buff.append(_data)
             self.max_buff_records_count-=1
             if(self.max_buff_records_count==0):
                 self.max_buff_records_count=self.max_buff_records
                 self.flush()
-        return False
+        return RunResult(False,did_run)
 
     def end_simulation_clean_up(self):
         self.flush()

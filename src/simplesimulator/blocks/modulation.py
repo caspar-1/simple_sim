@@ -2,7 +2,8 @@ import logging
 import numpy as np
 from . import exceptions as excpt
 from .block import Block
-from . import data as data
+from .data import DATA_TYPES,ARRAY_DATA
+from .data import ModelState ,RunResult
 
 logger=logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class OFDM(MODULATION):
         self.dataCarriers=np.delete(self.allCarriers,self.pilotCarriers)
         self.payloadBits_per_OFDM = len(self.dataCarriers)*self.mu
 
-    def run(self,ts):
+    def run(self,ms:ModelState)->RunResult:
         if self.data_availible():  
             data_in=self.block_sources[0].out_data_obj.data
             if self.window is None:
@@ -39,7 +40,7 @@ class OFDM(MODULATION):
 
             data_out=np.zeros_like(data_in)
             if(self.data_obj is None):
-                self.data_obj=data.ARRAY_DATA.from_data(data_out)
+                self.data_obj=ARRAY_DATA.from_data(data_out)
             else:
                 self.data_obj.data=data_out
 
@@ -47,6 +48,6 @@ class OFDM(MODULATION):
         else:
             self.out_data_valid=False
         
-        return False
+        return RunResult(False,self.out_data_valid)
 
 
