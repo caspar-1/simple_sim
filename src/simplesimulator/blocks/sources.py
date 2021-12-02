@@ -17,6 +17,9 @@ class source(Block):
     def get_out_data_type(self):
         return self.data_obj.data_type
 
+    def __repr__(self):
+        return "{}:{}".format(self.name,self.__class__.__name__)
+
 
 class sine_generator(source):
 

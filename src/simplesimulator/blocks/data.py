@@ -50,10 +50,10 @@ def get_mapping_type(np_type:np.dtype)->DATA_TYPES:
 
         
 class DATA():
-    def __init__(self,sz,data_format:DATA_FORMATS,data_type:DATA_TYPES)->None:
-        self.sz=sz
-        self.data_type=data_type
-        self.data_format=data_format
+    def __init__(self,sz:int,data_format:DATA_FORMATS,data_type:DATA_TYPES)->None:
+        self.sz:int=sz
+        self.data_type:int=data_type
+        self.data_format:int=data_format
         self.data=np.zeros(self.sz,dtype=get_numpy_mapping_type(data_type))
         
     def check_type(self,expected:DATA_TYPES)->bool:
@@ -67,6 +67,24 @@ class DATA():
 
     def get_data(self):
         return self.data
+
+    def obj_copy_deep(self):
+        try:
+            if isinstance(self,STREAM_DATA):
+                new_obj=self.__class__(self.data_type)
+            elif isinstance(self,ARRAY_DATA):
+                new_obj=self.__class__(self.sz,self.data_type)
+            else:
+                pass
+
+            new_obj.data=np.copy(self.data)
+            
+        except:
+            pass
+        return new_obj
+
+    def obj_copy(self):
+        return self
 
 
  

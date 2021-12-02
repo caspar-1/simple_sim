@@ -1,6 +1,6 @@
 
 from setuptools import setup
-
+from Cython.Build import cythonize
 
 exec(open("./src/simplesimulator/version.py").read())
 
@@ -19,6 +19,8 @@ setup(
         ],
 
     package_dir={'':'src'},
-    packages=['simplesimulator','simplesimulator.blocks'],
+    #packages=['simplesimulator','simplesimulator.blocks'],
+    #ext_modules =cythonize(["src/simplesimulator/__init__.py"])
+    ext_modules =cythonize(["Examples/example_1.py"])
 
 )
