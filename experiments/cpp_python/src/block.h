@@ -17,15 +17,22 @@ public:
     virtual RunResult run(ModelState *ms) = 0;
     virtual RunResult post_run(ModelState *ms) = 0;
 
-    ConnectorBase* add_input_connector(std::string name);
-    ConnectorBase* add_output_connector(std::string name);
+    ConnectorBase *add_input_connector(std::string name);
+    ConnectorBase *add_output_connector(std::string name);
 
     ConnectorBase *get_input_connector_byname(std::string name);
     ConnectorBase *get_output_connector_byname(std::string name);
 
+    void enable_debug() { debug = true; };
+
+    std::string get_info();
+
     std::string name;
     std::string class_id;
     uint32_t max_inputs;
+
+protected:
+    bool debug;
 
 private:
     static uint32_t blk_count;

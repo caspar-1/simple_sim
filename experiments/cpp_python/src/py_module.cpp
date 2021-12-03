@@ -39,43 +39,42 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def(py::init<float_t, float_t>())
         .def_readonly("time", &ModelState::time)
         .def_readonly("d_time", &ModelState::d_time);
-/*
+
     py::class_<ConnectorBase>(m, "ConnectorBase")
-        .def(py::init< Block *, std::string >)
-        .def_readonly("name", &InputConnector::m_name)
-        .def_readonly("owner", &InputConnector::m_owner);
+        .def_readonly("name", &ConnectorBase::m_name)
+        .def_readonly("owner", &ConnectorBase::m_owner);
 
-    py::class_<InputConnector, ConnectorBase>(m, "InputConnector")
-        .def(py::init< Block *, std::string>)
-        .def_readonly("name", &InputConnector::m_name)
-        .def_readonly("owner", &InputConnector::m_owner);
+    py::class_<InputConnector, ConnectorBase>(m, "InputConnector");
+        
 
-    py::class_<OutputConnector, ConnectorBase>(m, "OutputConnector")
-        .def(py::init< Block *, std::string>())
-        .def_readonly("name", &OutputConnector::m_name)
-        .def_readonly("owner", &OutputConnector::m_owner);
-*/
-    py::class_<Block>(m, "abstract__Block")
+    py::class_<OutputConnector, ConnectorBase>(m, "OutputConnector");
+        
+    py::class_<Block>(m, "Block")
+        .def("enable_debug", &Block::enable_debug)
+        .def("__repr__",&Block::get_info)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
 
-    py::class_<Block, BlockPythonExtensible>(m, "Block", py::module_local())
+    py::class_<Block, BlockPythonExtensible>(m, "pyBlock", py::module_local())
         .def(py::init<const std::string &, const std::string &, uint32_t>())
         .def("pre_run", &Block::pre_run)
         .def("run", &Block::run)
         .def("post_run", &Block::post_run)
         .def("add_input_connector", &Block::add_input_connector)
         .def("add_output_connector", &Block::add_output_connector)
+        .def("enable_debug", &Block::enable_debug)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
 
     py::class_<BlockSimple, Block>(m, "BlockSimple")
         .def(py::init<std::string>())
-        .def_readonly("name", &BlockSimple::name)
-        .def_readonly("class_id", &BlockSimple::class_id);
+        .def("__repr__",&Block::get_info);
+        //.def_readonly("name", &BlockSimple::name)
+        //.def_readonly("class_id", &BlockSimple::class_id);
 
     py::class_<BlockSource_Sin, Block>(m, "BlockSource_Sin")
         .def(py::init<std::string, float, float, float>())
-        .def_readonly("name", &BlockSource_Sin::name)
-        .def_readonly("class_id", &BlockSource_Sin::class_id);
+        .def("__repr__",&Block::get_info);
+        //.def_readonly("name", &BlockSource_Sin::name)
+        //.def_readonly("class_id", &BlockSource_Sin::class_id);
 }

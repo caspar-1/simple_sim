@@ -19,12 +19,19 @@ RunResult BlockSource_Sin::pre_run(ModelState *ms)
 
 RunResult BlockSource_Sin::run(ModelState *ms)
 {
-    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
-
-    (void)ms;
     float data = m_amplitude * sin((2.0 * M_PI * m_freq * ms->time) + m_phase);
-
-    std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << " Data="<< std::fixed << std::setprecision(3) << data << std::endl;
+    if (this->debug)
+    {
+        std::cout << "Fnct:"
+                  << __PRETTY_FUNCTION__
+                  << " class_id: "
+                  << this->class_id
+                  << " name: "
+                  << this->name
+                  << " Data="
+                  << std::fixed << std::setprecision(3) << data
+                  << std::endl;
+    }
     return RunResult(true, false);
 }
 
