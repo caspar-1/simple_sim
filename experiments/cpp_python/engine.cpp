@@ -13,6 +13,7 @@ Engine::~Engine()
 
 bool Engine::register_block(Block *blk)
 {
+    std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<blk->class_id<<" name: "<<blk->name<<std::endl;
     this->registered_blocks_list.push_back(blk);
     return true;
 }
@@ -20,11 +21,15 @@ bool Engine::register_block(Block *blk)
 void Engine::run(uint32_t iterations, bool debug)
 {
     RunResult r;
-    float_t time = (float_t)0.000;
-    float_t tick = (float_t)0.001;
+    float time = (float)0.000;
+    float tick = (float)0.001;
     ModelState ms = ModelState(time, tick);
     uint32_t i;
     auto start = high_resolution_clock::now();
+
+    std::cout<< "-------------------------------------------" <<std::endl;
+    std::cout<< "--               ENGINE                  --" <<std::endl;
+    std::cout<< "-------------------------------------------" <<std::endl;
 
     for (i = 0; i < iterations; i++)
     {
@@ -57,8 +62,6 @@ void Engine::run(uint32_t iterations, bool debug)
             {
                 std::cerr << e.what() << '\n';
             }
-
-            r = blk->run(&ms);
             if (debug)
             {
                 std::cout << "RUN :" << blk->name << ":" << r.__repr__() << std::endl;

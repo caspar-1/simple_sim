@@ -1,15 +1,15 @@
 #include "simple_block.h"
-
+#include <iostream>
 
 SimpleBlock::SimpleBlock(std::string name):
 Block::Block(name,"SimpleBlock", 0)
 {
-    
 }
 
 
 RunResult SimpleBlock::pre_run(ModelState *ms)
 {
+    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
     (void)ms;
     RunResult rr;
     rr.has_run = false;
@@ -20,6 +20,7 @@ RunResult SimpleBlock::pre_run(ModelState *ms)
 
 RunResult SimpleBlock::run(ModelState *ms)
 {
+    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
     (void)ms;
     RunResult rr;
     rr.has_run = true;
@@ -30,6 +31,7 @@ RunResult SimpleBlock::run(ModelState *ms)
 
 RunResult SimpleBlock::post_run(ModelState *ms)
 {
+    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
     (void)ms;
     RunResult rr;
     rr.has_run = false;
