@@ -38,7 +38,7 @@ ConnectorBase *Block::get_output_connector_byname(std::string name)
     return get_connector_byname(this->outputConnector_list, name);
 }
 
-ConnectorBase* Block::add_input_connector(std::string name,float default_value)
+ConnectorBase* Block::add_input_connector(std::string name)
 {
     InputConnector *p = nullptr;
     ConnectorBase* existing=get_input_connector_byname(name);

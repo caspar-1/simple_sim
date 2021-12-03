@@ -10,7 +10,7 @@ class Block;
 class InputConnector : public ConnectorBase
 {
 public:
-    InputConnector(Block *owner, std::string name) : ConnectorBase(owner, name){};
+    InputConnector(Block *owner,const std::string name) : ConnectorBase(owner, name){};
 
 private:
     ConnectorBase *source;

@@ -39,7 +39,7 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def(py::init<float_t, float_t>())
         .def_readonly("time", &ModelState::time)
         .def_readonly("d_time", &ModelState::d_time);
-
+/*
     py::class_<ConnectorBase>(m, "ConnectorBase")
         .def(py::init< Block *, std::string >)
         .def_readonly("name", &InputConnector::m_name)
@@ -54,7 +54,7 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def(py::init< Block *, std::string>())
         .def_readonly("name", &OutputConnector::m_name)
         .def_readonly("owner", &OutputConnector::m_owner);
-
+*/
     py::class_<Block>(m, "abstract__Block")
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);

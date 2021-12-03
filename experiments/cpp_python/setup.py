@@ -4,7 +4,8 @@ from setuptools import setup
 from pybind11.setup_helpers import Pybind11Extension
 
 module1 = Pybind11Extension('simpleSimCore',
-                    sources = ['py_module.cpp',"block.cpp","simple_block.cpp","engine.cpp"])
+                    sources = sorted(glob("src/*.cpp")),
+                    include_dirs=['src'])
 
 
 

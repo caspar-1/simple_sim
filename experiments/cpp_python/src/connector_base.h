@@ -8,7 +8,7 @@ class Block;
 class ConnectorBase
 {
     public:
-    ConnectorBase(Block *owner,std::string name):
+    ConnectorBase(Block *owner,const std::string name):
     m_owner(owner),
     m_name(name){};
 

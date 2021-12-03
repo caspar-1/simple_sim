@@ -13,7 +13,7 @@ class Block;
 class OutputConnector:public ConnectorBase
 {
     public:
-    OutputConnector(Block *owner,std::string name):ConnectorBase(owner,name){};
+    OutputConnector(Block *owner,const std::string name):ConnectorBase(owner,name){};
 
 };
 

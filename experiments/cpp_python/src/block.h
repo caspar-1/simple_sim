@@ -17,7 +17,7 @@ public:
     virtual RunResult run(ModelState *ms) = 0;
     virtual RunResult post_run(ModelState *ms) = 0;
 
-    ConnectorBase* add_input_connector(std::string name,float default_value);
+    ConnectorBase* add_input_connector(std::string name);
     ConnectorBase* add_output_connector(std::string name);
 
     ConnectorBase *get_input_connector_byname(std::string name);
