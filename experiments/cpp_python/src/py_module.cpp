@@ -56,7 +56,9 @@ PYBIND11_MODULE(simpleSimCore, m)
     py::class_<OutputConnector, ConnectorBase>(m, "OutputConnector");
 
     py::class_<Block>(m, "Block")
-        .def("enable_debug", &Block::enable_debug)
+        .def("enable_debug", &Block::enable_debug,"enable simple debug")
+        .def("get_input_connector_byname",&Block::get_input_connector_byname)
+        .def("get_output_connector_byname",&Block::get_output_connector_byname)
         .def("__repr__", &Block::get_info)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
@@ -68,6 +70,8 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def("post_run", &Block::post_run)
         .def("add_input_connector", &Block::add_input_connector)
         .def("add_output_connector", &Block::add_output_connector)
+        .def("get_input_connector_byname",&Block::get_input_connector_byname)
+        .def("get_output_connector_byname",&Block::get_output_connector_byname)
         .def("enable_debug", &Block::enable_debug)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);

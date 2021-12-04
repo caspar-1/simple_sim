@@ -30,13 +30,28 @@ class xBlock(core.pyBlock):
     def __repr__(self):
         return """{{"name":"{}","class_id":"{}"}} """.format(self.name,self.class_id)
 
-x=xBlock("source")
-y=xBlock("load")
 
 
-y.in_a.connect(x.out_b)
-y.in_b.connect(x.out_b)
-y.in_b.connect(x.out_b)
 
+def do(obj):
+    obj.enable_debug()
+    #a=obj.get_input_connector_byname("B")
+    
+  
 
-print(x)
+if __name__=="__main__":
+    x=xBlock("source")
+    y=xBlock("load")
+
+    y.enable_debug()
+    y.in_a.connect(x.out_a)
+    y.in_b.connect(x.out_b)
+    y.in_c.connect(x.out_b)
+
+    simple_a=core.BlockSimple("simple_a")
+    simple_b=core.BlockSimple("simple_b")
+
+    do(simple_a)
+
+    print(x)
+

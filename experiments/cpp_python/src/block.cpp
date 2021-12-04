@@ -4,7 +4,6 @@
 #include "connector_input.h"
 #include "connector_output.h"
 
-
 uint32_t Block::blk_count = 0;
 
 Block::Block(std::string name, std::string class_id, uint32_t n_inputs)
@@ -16,11 +15,17 @@ Block::Block(std::string name, std::string class_id, uint32_t n_inputs)
     this->max_inputs = n_inputs;
     this->debug = false;
     Block::blk_count++;
+
+#ifdef DEBUG_MESSAGES
     std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << std::endl;
+#endif
 }
 
 Block::~Block()
 {
+#ifdef DEBUG_MESSAGES
+    std::cout << "destructor \"Block\" : " << this->name << std::endl;
+#endif
 }
 
 RunResult Block::pre_run(ModelState *ms)
@@ -75,8 +80,10 @@ InputConnector *Block::add_input_connector(std::string name)
         p = new InputConnector(this, name);
         inputConnector_list.push_back(p);
     }
+#ifdef DEBUG_MESSAGES
     std::cout << "Block::add_input_connector"
               << " : \"" << name << "\" : " << (p == nullptr ? "FAILED" : "OK") << std::endl;
+#endif
     return p;
 }
 
@@ -89,8 +96,10 @@ OutputConnector *Block::add_output_connector(std::string name)
         p = new OutputConnector(this, name);
         outputConnector_list.push_back(p);
     }
+#ifdef DEBUG_MESSAGES
     std::cout << "Block::add_output_connector"
               << " : \"" << name << "\" : " << (p == nullptr ? "FAILED" : "OK") << std::endl;
+#endif
     return p;
 }
 

@@ -68,7 +68,7 @@ source_sin_3=core.BlockSource_Sin("sin3",30.0,0,1.0)
 source_sin_4=core.BlockSource_Sin("sin4",40.0,0,1.0)
 source_sin_5=core.BlockSource_Sin("sin5",50.0,0,1.0)
 #source_sin.enable_debug()
-py.enable_debug()
+#py.enable_debug()
 print(py.class_id)
 print(cy.class_id)
 print(source_sin_1.name)
@@ -93,7 +93,7 @@ if True:
     engine.register_block(source_sin_4)
     engine.register_block(source_sin_5)
 
-engine.run(1000000,False)
+engine.run(10000000,False)
 
 
 pass

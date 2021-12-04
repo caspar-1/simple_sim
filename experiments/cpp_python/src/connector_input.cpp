@@ -9,6 +9,11 @@ InputConnector::InputConnector(Block *owner, const std::string name) : Connector
 {
 }
 
+InputConnector::~InputConnector()
+{
+    
+}
+
 bool InputConnector::connect(ConnectorBase *p_base_connector)
 {
     OutputConnector *p_connector = static_cast<OutputConnector *>(p_base_connector);

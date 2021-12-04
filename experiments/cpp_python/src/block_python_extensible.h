@@ -3,6 +3,7 @@
 
 #include <pybind11/pybind11.h>
 #include "block.h"
+#include <iostream>
 
 namespace py = pybind11;
 
@@ -10,6 +11,8 @@ class BlockPythonExtensible : public Block
 {
 public:
     using Block::Block;
+
+    ~BlockPythonExtensible();
   
     RunResult pre_run(ModelState*ms) override
     {

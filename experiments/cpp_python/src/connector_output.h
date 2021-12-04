@@ -10,6 +10,7 @@ class OutputConnector:public ConnectorBase
 {
     public:
     OutputConnector(Block *owner,const std::string name);
+    virtual ~OutputConnector();
     virtual direction_t direction(){return direction_t::OUTPUT;};
     virtual bool connect(ConnectorBase*);
 

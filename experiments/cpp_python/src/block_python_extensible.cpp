@@ -4,6 +4,9 @@
 
 namespace py = pybind11;
 
-
-
-    
+BlockPythonExtensible::~BlockPythonExtensible()
+{
+#ifdef DEBUG_MESSAGES
+    std::cout << "destructor<BlockPythonExtensible> : " << this->name << std::endl;
+#endif
+}

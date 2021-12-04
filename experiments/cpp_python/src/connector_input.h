@@ -11,6 +11,7 @@ class InputConnector : public ConnectorBase
 {
 public:
     InputConnector(Block *owner,const std::string name);
+    virtual ~InputConnector();
     virtual direction_t direction(){return direction_t::INPUT;};
     virtual bool connect(ConnectorBase*);
     ConnectorBase * get_source(){return source;};

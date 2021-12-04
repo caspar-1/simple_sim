@@ -16,7 +16,7 @@ class ConnectorBase
 {
     public:
     ConnectorBase(Block *owner,const std::string name);
-    ~ConnectorBase();
+    virtual ~ConnectorBase();
 
     virtual bool connect(ConnectorBase*)=0;
     virtual direction_t direction()=0;

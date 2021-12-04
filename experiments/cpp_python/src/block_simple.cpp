@@ -1,15 +1,25 @@
 #include "block_simple.h"
 #include <iostream>
+#include "connector_input.h"
+#include "connector_output.h"
 
-BlockSimple::BlockSimple(std::string name):
-Block::Block(name,"BlockSimple", 0)
+BlockSimple::BlockSimple(std::string name) : BlockInternal::BlockInternal(name, "BlockSimple", 0)
+{
+    this->add_input_connector("A");
+    this->add_input_connector("B");
+    this->add_output_connector("OUT");
+}
+
+BlockSimple::~BlockSimple()
 {
 }
 
-
 RunResult BlockSimple::pre_run(ModelState *ms)
 {
-    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
+
+#ifdef DEBUG_MESSAGES
+    std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << std::endl;
+#endif
     (void)ms;
     RunResult rr;
     rr.has_run = false;
@@ -20,7 +30,9 @@ RunResult BlockSimple::pre_run(ModelState *ms)
 
 RunResult BlockSimple::run(ModelState *ms)
 {
-    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
+#ifdef DEBUG_MESSAGES
+    std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << std::endl;
+#endif
     (void)ms;
     RunResult rr;
     rr.has_run = true;
@@ -31,7 +43,9 @@ RunResult BlockSimple::run(ModelState *ms)
 
 RunResult BlockSimple::post_run(ModelState *ms)
 {
-    //std::cout<< "Fnct:"<< __PRETTY_FUNCTION__ <<" class_id: "<<this->class_id<<" name: "<<this->name<<std::endl;
+#ifdef DEBUG_MESSAGES
+    std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << std::endl;
+#endif
     (void)ms;
     RunResult rr;
     rr.has_run = false;
