@@ -14,6 +14,8 @@ class xBlock(core.pyBlock):
         self.out_d=self.add_output_connector("D")
         print(self.out_d.name)
         print(self.out_d.owner.name)
+        print(self.in_d.direction())
+        print(self.out_d.direction())
 
 
     def pre_run(self,ms):
@@ -22,11 +24,19 @@ class xBlock(core.pyBlock):
     def run(self,ms):
         pass
 
-
     def post_run(self,ms):
         pass
 
     def __repr__(self):
         return """{{"name":"{}","class_id":"{}"}} """.format(self.name,self.class_id)
 
-x=xBlock("test")
+x=xBlock("source")
+y=xBlock("load")
+
+
+y.in_a.connect(x.out_b)
+y.in_b.connect(x.out_b)
+y.in_b.connect(x.out_b)
+
+
+print(x)

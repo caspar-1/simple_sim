@@ -40,18 +40,24 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def_readonly("time", &ModelState::time)
         .def_readonly("d_time", &ModelState::d_time);
 
+    py::enum_<direction_t>(m, "Direction")
+        .value("INPUT", direction_t::INPUT)
+        .value("OUTPUT", direction_t::OUTPUT);
+
     py::class_<ConnectorBase>(m, "ConnectorBase")
+        .def("direction", &ConnectorBase::direction)
+        .def("connect", &ConnectorBase::connect)
         .def_readonly("name", &ConnectorBase::m_name)
         .def_readonly("owner", &ConnectorBase::m_owner);
 
     py::class_<InputConnector, ConnectorBase>(m, "InputConnector");
-        
+
 
     py::class_<OutputConnector, ConnectorBase>(m, "OutputConnector");
-        
+
     py::class_<Block>(m, "Block")
         .def("enable_debug", &Block::enable_debug)
-        .def("__repr__",&Block::get_info)
+        .def("__repr__", &Block::get_info)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
 
@@ -68,13 +74,11 @@ PYBIND11_MODULE(simpleSimCore, m)
 
     py::class_<BlockSimple, Block>(m, "BlockSimple")
         .def(py::init<std::string>())
-        .def("__repr__",&Block::get_info);
-        //.def_readonly("name", &BlockSimple::name)
-        //.def_readonly("class_id", &BlockSimple::class_id);
+        .def("__repr__", &Block::get_info);
+
 
     py::class_<BlockSource_Sin, Block>(m, "BlockSource_Sin")
         .def(py::init<std::string, float, float, float>())
-        .def("__repr__",&Block::get_info);
-        //.def_readonly("name", &BlockSource_Sin::name)
-        //.def_readonly("class_id", &BlockSource_Sin::class_id);
+        .def("__repr__", &Block::get_info);
+
 }

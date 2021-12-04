@@ -2,34 +2,49 @@
 #define __BLOCK_H__
 
 #include <iostream>
+#include <list>
 #include "run_result.h"
 #include "model_state.h"
-#include "connector_input.h"
-#include "connector_output.h"
-#include <list>
+
+//use forward declaration, instead of including headers to avoid nasty recursive behavior
+class ConnectorBase;
+class InputConnector;
+class OutputConnector;
+
+
 
 class Block
 {
 public:
     Block(std::string name, std::string class_id, uint32_t n_inputs);
-    virtual ~Block() {}
-    virtual RunResult pre_run(ModelState *ms) = 0;
-    virtual RunResult run(ModelState *ms) = 0;
-    virtual RunResult post_run(ModelState *ms) = 0;
+    
+    //virtual
+    virtual ~Block();
+    virtual RunResult pre_run(ModelState *ms);
+    virtual RunResult run(ModelState *ms);
+    virtual RunResult post_run(ModelState *ms);
 
-    ConnectorBase *add_input_connector(std::string name);
-    ConnectorBase *add_output_connector(std::string name);
+    
 
-    ConnectorBase *get_input_connector_byname(std::string name);
-    ConnectorBase *get_output_connector_byname(std::string name);
+    //common public
+    InputConnector *add_input_connector(std::string name);
+    OutputConnector *add_output_connector(std::string name);
 
-    void enable_debug() { debug = true; };
+    InputConnector *get_input_connector_byname(std::string name);
+    OutputConnector *get_output_connector_byname(std::string name);
 
-    std::string get_info();
+    const std::string get_name(){return this->name;};
 
+
+    //public members
     std::string name;
     std::string class_id;
-    uint32_t max_inputs;
+    uint32_t max_inputs;    
+    
+    //debug info
+    void enable_debug() { debug = true; };
+    std::string get_info();
+
 
 protected:
     bool debug;

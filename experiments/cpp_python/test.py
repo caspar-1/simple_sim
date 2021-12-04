@@ -4,10 +4,10 @@ class xBlock(core.pyBlock):
 
     def __init__(self,name):
         super().__init__(name,self.__class__.__name__,0)
-        #self.connector_in_a=self.add_input_connector("A")
-        #self.connector_in_a=self.add_input_connector("B")
-        #self.connector_out_a=self.add_output_connector("A")
-        #self.connector_out_a=self.add_output_connector("B")
+        self.connector_in_a=self.add_input_connector("A")
+        self.connector_in_a=self.add_input_connector("B")
+        self.connector_out_a=self.add_output_connector("A")
+        self.connector_out_a=self.add_output_connector("B")
 
     def pre_run(self,ms):
         rr=core.RunResult()
@@ -93,7 +93,7 @@ if True:
     engine.register_block(source_sin_4)
     engine.register_block(source_sin_5)
 
-engine.run(10000000,False)
+engine.run(1000000,False)
 
 
 pass

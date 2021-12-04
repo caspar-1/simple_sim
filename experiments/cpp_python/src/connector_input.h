@@ -5,12 +5,16 @@
 #include <string>
 #include "connector_base.h"
 
-class Block;
+
 
 class InputConnector : public ConnectorBase
 {
 public:
-    InputConnector(Block *owner,const std::string name) : ConnectorBase(owner, name){};
+    InputConnector(Block *owner,const std::string name);
+    virtual direction_t direction(){return direction_t::INPUT;};
+    virtual bool connect(ConnectorBase*);
+    ConnectorBase * get_source(){return source;};
+    void set_source(ConnectorBase *p){source=p;};
 
 private:
     ConnectorBase *source;

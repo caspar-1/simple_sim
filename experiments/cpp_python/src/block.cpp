@@ -1,6 +1,9 @@
-#include "block.h"
 #include <sstream>
 #include <iostream>
+#include "block.h"
+#include "connector_input.h"
+#include "connector_output.h"
+
 
 uint32_t Block::blk_count = 0;
 
@@ -16,6 +19,28 @@ Block::Block(std::string name, std::string class_id, uint32_t n_inputs)
     std::cout << "Fnct:" << __PRETTY_FUNCTION__ << " class_id: " << this->class_id << " name: " << this->name << std::endl;
 }
 
+Block::~Block()
+{
+}
+
+RunResult Block::pre_run(ModelState *ms)
+{
+    RunResult r;
+    return r;
+}
+
+RunResult Block::run(ModelState *ms)
+{
+    RunResult r;
+    return r;
+}
+
+RunResult Block::post_run(ModelState *ms)
+{
+    RunResult r;
+    return r;
+}
+
 ConnectorBase *Block::get_connector_byname(std::list<ConnectorBase *> &list, std::string name)
 {
     ConnectorBase *found = nullptr;
@@ -29,17 +54,19 @@ ConnectorBase *Block::get_connector_byname(std::list<ConnectorBase *> &list, std
     return found;
 }
 
-ConnectorBase *Block::get_input_connector_byname(std::string name)
+InputConnector *Block::get_input_connector_byname(std::string name)
 {
-    return get_connector_byname(this->inputConnector_list, name);
+    ConnectorBase *p = get_connector_byname(this->inputConnector_list, name);
+    return static_cast<InputConnector *>(p);
 }
 
-ConnectorBase *Block::get_output_connector_byname(std::string name)
+OutputConnector *Block::get_output_connector_byname(std::string name)
 {
-    return get_connector_byname(this->outputConnector_list, name);
+    ConnectorBase *p = get_connector_byname(this->outputConnector_list, name);
+    return static_cast<OutputConnector *>(p);
 }
 
-ConnectorBase *Block::add_input_connector(std::string name)
+InputConnector *Block::add_input_connector(std::string name)
 {
     InputConnector *p = nullptr;
     ConnectorBase *existing = get_input_connector_byname(name);
@@ -53,7 +80,7 @@ ConnectorBase *Block::add_input_connector(std::string name)
     return p;
 }
 
-ConnectorBase *Block::add_output_connector(std::string name)
+OutputConnector *Block::add_output_connector(std::string name)
 {
     OutputConnector *p = nullptr;
     ConnectorBase *existing = get_output_connector_byname(name);
