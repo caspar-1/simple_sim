@@ -93,7 +93,7 @@ if True:
     engine.register_block(source_sin_4)
     engine.register_block(source_sin_5)
 
-engine.run(10000000,False)
+engine.run(1000000,False)
 
 
 pass

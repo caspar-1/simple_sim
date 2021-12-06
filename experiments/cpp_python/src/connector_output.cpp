@@ -44,3 +44,8 @@ bool OutputConnector::connect(ConnectorBase *p_base_connector)
     }
     return true;
 }
+
+std::string OutputConnector::as_string()
+{
+    return "OutputConnector";
+}

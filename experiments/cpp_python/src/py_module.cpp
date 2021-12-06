@@ -47,6 +47,7 @@ PYBIND11_MODULE(simpleSimCore, m)
     py::class_<ConnectorBase>(m, "ConnectorBase")
         .def("direction", &ConnectorBase::direction)
         .def("connect", &ConnectorBase::connect)
+        .def("__repr__",&ConnectorBase::as_string)
         .def_readonly("name", &ConnectorBase::m_name)
         .def_readonly("owner", &ConnectorBase::m_owner);
 
@@ -59,7 +60,7 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def("enable_debug", &Block::enable_debug,"enable simple debug")
         .def("get_input_connector_byname",&Block::get_input_connector_byname)
         .def("get_output_connector_byname",&Block::get_output_connector_byname)
-        .def("__repr__", &Block::get_info)
+        .def("__repr__", &Block::as_string)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
 
@@ -76,13 +77,16 @@ PYBIND11_MODULE(simpleSimCore, m)
         .def_readonly("name", &Block::name)
         .def_readonly("class_id", &Block::class_id);
 
-    py::class_<BlockSimple, Block>(m, "BlockSimple")
+    
+    py::class_<BlockInternal,Block>(m, "BlockInternal");
+    
+    py::class_<BlockSimple, BlockInternal>(m, "BlockSimple")
         .def(py::init<std::string>())
-        .def("__repr__", &Block::get_info);
+        .def("__repr__", &Block::as_string);
 
 
-    py::class_<BlockSource_Sin, Block>(m, "BlockSource_Sin")
+    py::class_<BlockSource_Sin, BlockInternal>(m, "BlockSource_Sin")
         .def(py::init<std::string, float, float, float>())
-        .def("__repr__", &Block::get_info);
+        .def("__repr__", &Block::as_string);
 
 }

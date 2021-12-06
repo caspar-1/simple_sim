@@ -45,3 +45,8 @@ bool InputConnector::connect(ConnectorBase *p_base_connector)
     }
     return true;
 }
+
+std::string InputConnector::as_string()
+{
+    return "InputConnector";
+}

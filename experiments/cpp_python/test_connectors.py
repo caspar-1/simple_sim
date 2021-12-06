@@ -51,7 +51,7 @@ if __name__=="__main__":
     simple_a=core.BlockSimple("simple_a")
     simple_b=core.BlockSimple("simple_b")
 
-    do(simple_a)
+    print(simple_a)
 
     print(x)
 

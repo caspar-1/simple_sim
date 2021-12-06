@@ -33,6 +33,22 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "TEST",
+            "type": "cppdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/tests/buffer/build",
+            "program": "${workspaceFolder}/tests/buffer/build/test",
+            "MIMode": "gdb",
+   
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
     ]
 }

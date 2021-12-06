@@ -38,7 +38,7 @@ public:
 
     //debug info
     void enable_debug() { debug = true; };
-    std::string get_info();
+    std::string as_string();
 
 protected:
     bool debug;

@@ -12,8 +12,9 @@ class OutputConnector:public ConnectorBase
     OutputConnector(Block *owner,const std::string name);
     virtual ~OutputConnector();
     virtual direction_t direction(){return direction_t::OUTPUT;};
-    virtual bool connect(ConnectorBase*);
+    virtual  std::string as_string();
 
+    virtual bool connect(ConnectorBase*);
     void register_load(ConnectorBase* p){registered_loads_list.push_back(p);};
 
 

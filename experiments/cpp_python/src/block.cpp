@@ -103,7 +103,7 @@ OutputConnector *Block::add_output_connector(std::string name)
     return p;
 }
 
-std::string Block::get_info()
+std::string Block::as_string()
 {
     std::stringstream s;
     s << "\"name\":\"" << this->name << "\"" << std::endl;
