@@ -1,0 +1,23 @@
+{
+"version": "0.2.0",
+"configurations": [
+    {
+        "name": "Python C++ Debug",
+        "type": "pythoncpp",
+        "request": "launch",
+        "pythonLaunchName": "Python: Current File",
+        "cppConfig": "default (gdb) Attach"
+    },
+    {
+        "name": "Python: Current File",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/test.py",
+        "console": "integratedTerminal",
+        "env": {
+            "LD_LIBRARY_PATH": "/home/caspar/work/projects/python_experiments/simple_sim/experiments/cpp_python/"
+        },
+        "cwd": "${workspaceRoot}"
+    }
+]
+}

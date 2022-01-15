@@ -1,38 +1,35 @@
 #include "data_container.h"
 
-DataContainer::DataContainer()
+template <>
+std::string DataContainer<complex_float>::type()
 {
-    this->p_data = nullptr;
+ return std::string("complex_float");
 }
 
-DataContainer::~DataContainer()
+template <>
+std::string DataContainer<float>::type()
 {
+ return std::string("float");
 }
 
-bool DataContainer::data_is_ready()
+template <>
+std::string DataContainer<int>::type()
 {
-    return ((this->p_data != nullptr) & (this->is_valid));
+ return std::string("int");
 }
 
-DataObjectBase *DataContainer::get_data()
+
+
+template <>
+void DataContainer<complex_float>::fill_random(complex_float min, complex_float max)
 {
-    DataObjectBase *p = nullptr;
-    if (this->is_valid)
+    float scale_real = (static_cast<float>(RAND_MAX) / (max.real() - min.real()));
+    float scale_imag = (static_cast<float>(RAND_MAX) / (max.imag() - min.imag()));
+    for (size_t idx = 0; idx != this->sz; idx++)
     {
-        p = this->p_data;
-    }
-    return p;
-}
+        float _real = min.real() + ((static_cast<float>(rand())) / scale_real);
+        float _imag = min.imag() + ((static_cast<float>(rand())) / scale_imag);
 
-void DataContainer::set_data(DataObjectBase *_data)
-{
-    if (_data != nullptr)
-    {
-        this->is_valid = true;
-        this->p_data = _data;
-    }
-    else
-    {
-        this->is_valid = false;
+        (*p_data)[idx] = complex_float(_real, _imag);
     }
 }

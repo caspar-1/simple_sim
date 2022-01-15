@@ -1,5 +1,7 @@
-import simpleSimCore as core
+import os
+print("PID={}".format(os.getpid()))
 
+import simpleSimCore as core
 class xBlock(core.pyBlock):
 
     def __init__(self,name):
@@ -73,6 +75,9 @@ print(py.class_id)
 print(cy.class_id)
 print(source_sin_1.name)
 
+
+logger=core.Logger.get_logger()
+logger.log_level=core.ERROR_LEVEL.INFO
 engine=core.Engine()
 if False:
     engine.register_block(px)
@@ -93,7 +98,7 @@ if True:
     engine.register_block(source_sin_4)
     engine.register_block(source_sin_5)
 
-engine.run(1000000,False)
+engine.run(1000,True)
 
 
 pass

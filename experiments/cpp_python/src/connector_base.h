@@ -26,7 +26,7 @@ class ConnectorBase
 
     Block * m_owner;
     std::string m_name;
-    DataContainer *p_dataContainer;
+    DataContainer<float> *p_dataContainer;
 
 };
 

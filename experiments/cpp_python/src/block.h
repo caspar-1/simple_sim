@@ -30,6 +30,7 @@ public:
     OutputConnector *get_output_connector_byname(std::string name);
 
     const std::string get_name() { return this->name; };
+    const char* get_name_cstr() { return this->name.c_str(); };
 
     //public members
     std::string name;
